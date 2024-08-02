@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "wh-gg"
+version = "0.1.0"
+description = ""
+authors = ["diegowh <contacto.diegowh@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "wh"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.112.0"
+uvicorn = "^0.30.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
