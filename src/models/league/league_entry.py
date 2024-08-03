@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from sqlalchemy import String, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models import Base
+from src.models.account.account import Account
 
 class LeagueEntry(Base):
     __tablename__ = "league_entry"
@@ -22,7 +23,7 @@ class LeagueEntry(Base):
     inactive: Mapped[Boolean] = mapped_column(Boolean)
     
     
-    account: Mapped["Account"] = relationship(back_populates="league_entries")
+    account: Mapped[Account] = relationship(back_populates="league_entries")
     
     def __repr__(self) -> str:
         return f"LeagueEntry(id={self.id!r}, summonerId={self.summonerId!r}, tier={self.tier!r}, rank={self.rank!r})"

@@ -20,7 +20,7 @@ class Account(Base):
     revisionDate: Mapped[int] = mapped_column(Integer)
     summonerLevel: Mapped[int] = mapped_column(Integer)
     
-    league_entries: Mapped[List["LeagueEntry"]] = relationship(
+    league_entries: Mapped[List[LeagueEntry]] = relationship(
         back_populates="account",
         cascade="all, delete-orphan"
     )
