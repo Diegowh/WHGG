@@ -12,18 +12,18 @@ class LeagueEntry(Base):
     __tablename__ = "league_entry"
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    leagueId: Mapped[String] = mapped_column(String)
-    queueType: Mapped[String] = mapped_column(String)
-    tier: Mapped[String] = mapped_column(String)
-    rank: Mapped[String] = mapped_column(String)
+    leagueId: Mapped[String]
+    queueType: Mapped[String]
+    tier: Mapped[String]
+    rank: Mapped[String]
     summonerId: Mapped[String] = mapped_column(String, ForeignKey("account.summonerId"))
-    leaguePoints: Mapped[Integer] = mapped_column(Integer)
-    wins: Mapped[Integer] = mapped_column(Integer)
-    losses: Mapped[Integer] = mapped_column(Integer)
-    hotStreak: Mapped[Boolean] = mapped_column(Boolean)
-    veteran: Mapped[Boolean] = mapped_column(Boolean)
-    freshBlood: Mapped[Boolean] = mapped_column(Boolean)
-    inactive: Mapped[Boolean] = mapped_column(Boolean)
+    leaguePoints: Mapped[Integer]
+    wins: Mapped[Integer]
+    losses: Mapped[Integer]
+    hotStreak: Mapped[Boolean]
+    veteran: Mapped[Boolean]
+    freshBlood: Mapped[Boolean]
+    inactive: Mapped[Boolean]
     
     
     account: Mapped[Account] = relationship(back_populates="league_entries")
