@@ -10,12 +10,14 @@ class Account(Base):
     
     __tablename__ = "account"
     
-    puuid: Mapped[str] = mapped_column(String, primary_key=True, unique=True, index=True)
-    summonerId: Mapped[str] = mapped_column(String, unique=True, index=True)
-    accountId: Mapped[str] = mapped_column(String, unique=True, index=True)
+    puuid: Mapped[str] = mapped_column(String(78), primary_key=True, unique=True, index=True)
+    summonerId: Mapped[str] = mapped_column(String(63), unique=True, index=True)
+    accountId: Mapped[str] = mapped_column(String(56), unique=True, index=True)
     gameName: Mapped[str]
     tagLine: Mapped[str]
     profileIconId: Mapped[int]
+     # Date Summoner was last modified specified as epoch milliseconds.
+     # The following events will update this timestamp: summoner name change, summoner level change, or profile icon change
     revisionDate: Mapped[int]
     summonerLevel: Mapped[int]
     
