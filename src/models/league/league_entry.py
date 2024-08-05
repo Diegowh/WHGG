@@ -2,8 +2,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from sqlalchemy import String, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.models import Base
-from src.models.account.account import Account
+from src.models.base import Base
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.models.account.account import Account
+
 
 class LeagueEntry(Base):
     __tablename__ = "league_entry"
