@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from sqlalchemy import String, Integer, Boolean, ForeignKey
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models.base import Base
 from typing import TYPE_CHECKING
@@ -11,22 +11,22 @@ if TYPE_CHECKING:
 class LeagueEntry(Base):
     __tablename__ = "league_entry"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    leagueId: Mapped[String]
-    queueType: Mapped[String]
-    tier: Mapped[String]
-    rank: Mapped[String]
-    summonerId: Mapped[String] = mapped_column(String, ForeignKey("account.summonerId"))
-    leaguePoints: Mapped[Integer]
-    wins: Mapped[Integer]
-    losses: Mapped[Integer]
-    hotStreak: Mapped[Boolean]
-    veteran: Mapped[Boolean]
-    freshBlood: Mapped[Boolean]
-    inactive: Mapped[Boolean]
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     
-    
+    account_id: Mapped[str] = mapped_column(ForeignKey("account.id"))
     account: Mapped[Account] = relationship(back_populates="league_entries")
+    
+    leagueId: Mapped[str]
+    queueType: Mapped[str]
+    tier: Mapped[str]
+    rank: Mapped[str]
+    leaguePoints: Mapped[int]
+    wins: Mapped[int]
+    losses: Mapped[int]
+    hotStreak: Mapped[bool]
+    veteran: Mapped[bool]
+    freshBlood: Mapped[bool]
+    inactive: Mapped[bool]
     
     def __repr__(self) -> str:
         return f"LeagueEntry(id={self.id!r}, summonerId={self.summonerId!r}, tier={self.tier!r}, rank={self.rank!r})"
