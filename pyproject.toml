@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "wh-gg"
+name = "WHGG"
 version = "0.1.0"
-description = ""
-authors = ["diegowh <contacto.diegowh@gmail.com>"]
+description = "App that privdes real-time stats and profile data for League of Legends"
+authors = ["DiegoWH <contacto.diegowh@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "wh"}]
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
