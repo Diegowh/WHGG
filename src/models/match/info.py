@@ -8,10 +8,10 @@ from src.models.match.team import Team
 
 
 class Info(Base):
-
     __tablename__ = "info"
     
-    id: Mapped[int] = mapped_column(primary_key=true, autoincrement=true, index=true, unique=true)
+    id: Mapped[int] = mapped_column(primary_key=true, autoincrement=True)
+    
     endOfGameResult: Mapped[str]
     gameCreation: Mapped[int]
     gameDuration: Mapped[int]
