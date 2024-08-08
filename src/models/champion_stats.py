@@ -21,3 +21,9 @@ class ChampionStats(Base):
     assist_avg: Mapped[float]
     winrate: Mapped[int]
     games_played: Mapped[int]
+
+    def __repr__(self) -> str:
+        return (f"ChampionStats(id={self.id!r}, account_id={self.account_id!r}, "
+                f"name={self.name!r}, kda={self.kda!r}, kill_avg={self.kill_avg!r}, "
+                f"death_avg={self.death_avg!r}, assist_avg={self.assist_avg!r}, "
+                f"winrate={self.winrate!r}, games_played={self.games_played!r})")
