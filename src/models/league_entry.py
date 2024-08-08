@@ -1,8 +1,12 @@
-from __future__ import annotations
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from src.models.base import Base
-from src.models.account import Account
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.models.account import Account
+    
 
 
 class LeagueEntry(Base):
@@ -11,7 +15,7 @@ class LeagueEntry(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     
     account_id: Mapped[str] = mapped_column(ForeignKey("account.id"))
-    account: Mapped[Account] = relationship(back_populates="league_entries")
+    account: Mapped["Account"] = relationship(back_populates="league_entries")
     
     queue_type: Mapped[str]
     tier: Mapped[str]

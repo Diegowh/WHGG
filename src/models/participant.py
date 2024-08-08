@@ -1,16 +1,18 @@
 from sqlalchemy import ForeignKey
 from src.models.base import Base
-from src.models.match import Match
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.models.match import Match
+    
 
 class Participant(Base):
     __tablename__ = "participant"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    match_id = Mapped[int] = mapped_column(ForeignKey("match.id"))
-    match = Mapped[Match] = relationship(back_populates="participants")
+    match_id: Mapped[int] = mapped_column(ForeignKey("match.id"))
+    match: Mapped["Match"] = relationship(back_populates="participants")
 
 
     assists: Mapped[int]

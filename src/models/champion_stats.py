@@ -1,9 +1,11 @@
-from __future__ import annotations
-
 from sqlalchemy import ForeignKey
-from src.models.account import Account
-from src.models.base import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from src.models.base import Base
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.models.account import Account
 
 
 class ChampionStats(Base):
@@ -12,7 +14,7 @@ class ChampionStats(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))
-    account: Mapped[Account] = relationship(back_populates="champion_stats")
+    account: Mapped["Account"] = relationship(back_populates="champion_stats")
 
     name: Mapped[str]
     kda: Mapped[float]

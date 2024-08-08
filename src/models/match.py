@@ -1,9 +1,12 @@
-from __future__ import annotations
-from src.models.account import Account
-from src.models.base import Base
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from src.models.participant import Participant
+
+from src.models.base import Base
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.models.account import Account
+    from src.models.participant import Participant
 
 
 
@@ -13,9 +16,9 @@ class Match(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))
-    account: Mapped[Account] = relationship(back_populates="matches")
+    account: Mapped["Account"] = relationship(back_populates="matches")
     
-    participants: Mapped[list[Participant]] = relationship(back_populates="match", cascade="all, delete-orphan")
+    participants: Mapped[list["Participant"]] = relationship(back_populates="match", cascade="all, delete-orphan")
 
     match_id: Mapped[str]
     game_creation: Mapped[int]

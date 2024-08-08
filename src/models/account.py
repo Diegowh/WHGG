@@ -1,20 +1,23 @@
-from __future__ import annotations
-from src.models.champion_stats import ChampionStats
-from src.models.league_entry import LeagueEntry
 from sqlalchemy import String
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from src.models.base import Base
-from src.models.match import Match
 
+from src.models.base import Base
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.models.champion_stats import ChampionStats
+    from src.models.league_entry import LeagueEntry
+    from src.models.match import Match
+    
 
 class Account(Base):
     __tablename__ = "account"
     
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    league_entries: Mapped[list[LeagueEntry]] = relationship(back_populates="account", cascade="all, delete-orphan")
-    matches: Mapped[list[Match]] = relationship(back_populates="account", cascade="all, delete-orphan")
-    champion_stats: Mapped[list[ChampionStats]] = relationship(back_populates="account", cascade="all, delete-orphan")
+    league_entries: Mapped[list["LeagueEntry"]] = relationship(back_populates="account", cascade="all, delete-orphan")
+    matches: Mapped[list["Match"]] = relationship(back_populates="account", cascade="all, delete-orphan")
+    champion_stats: Mapped[list["ChampionStats"]] = relationship(back_populates="account", cascade="all, delete-orphan")
 
     puuid: Mapped[str] = mapped_column(String(78), unique=True, index=True)
     summoner_id: Mapped[str] = mapped_column(String(63), unique=True, index=True)
