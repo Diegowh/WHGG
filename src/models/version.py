@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from src.models.base import Base
+
+
 # https://ddragon.leagueoflegends.com/api/versions.json
 class Version(Base):
     __tablename__ = "version"
