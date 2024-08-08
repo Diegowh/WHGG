@@ -1,9 +1,10 @@
 from __future__ import annotations
-from src.models.league.league_entry import LeagueEntry
+from src.models.champion_stats import ChampionStats
+from src.models.league_entry import LeagueEntry
 from sqlalchemy import String
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from src.models.base import Base
-from src.models.match.match import Match
+from src.models.match import Match
 
 
 class Account(Base):
@@ -12,19 +13,17 @@ class Account(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
     league_entries: Mapped[list[LeagueEntry]] = relationship(back_populates="account", cascade="all, delete-orphan")
-    matches: Mapped[list[Match]] = relationship(back_populates="account")
-    
+    matches: Mapped[list[Match]] = relationship(back_populates="account", cascade="all, delete-orphan")
+    champion_stats: Mapped[list[ChampionStats]] = relationship(back_populates="account", cascade="all, delete-orphan")
+
     puuid: Mapped[str] = mapped_column(String(78), unique=True, index=True)
-    summonerId: Mapped[str] = mapped_column(String(63), unique=True, index=True)
-    accountId: Mapped[str] = mapped_column(String(56), unique=True)
-    gameName: Mapped[str]
-    tagLine: Mapped[str]
-    profileIconId: Mapped[int]
-    summonerLevel: Mapped[int]
-    # Fecha en la que el Summoner fue modificado por ultima vez, especificada en milisegundos desde el epoch
-    # Los siguientes eventos actualizaran este timestamp: 
-    # cambio de summoner name, cambio de summoner level, cambio de profile icon
-    revisionDate: Mapped[int]
+    summoner_id: Mapped[str] = mapped_column(String(63), unique=True, index=True)
+    account_id: Mapped[str] = mapped_column(String(56), unique=True)
+    game_name: Mapped[str]
+    tag_line: Mapped[str]
+    profile_iconId: Mapped[int]
+    summoner_level: Mapped[int]
+    last_update: Mapped[int]
     
     def __repr__(self) -> str:
         return (f"Account(puuid={self.puuid!r}, summonerId={self.summonerId!r}, "
