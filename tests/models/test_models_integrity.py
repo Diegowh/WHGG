@@ -170,6 +170,8 @@ def test_participant_creation(session):
         summoner_level=30,
         last_update=123456789
     )
+    session.add(account)
+    session.commit()
 
     match = Match(
         account_id=account.id,
@@ -183,8 +185,9 @@ def test_participant_creation(session):
         game_version="13.12",
         queue_id=420
     )
+    session.add(match)
+    session.commit()
     
-    # Crear un Participant y asociarlo con el Match
     participant = Participant(
         match_id=match.id,
         assists=5,
@@ -223,8 +226,6 @@ def test_participant_creation(session):
 
     match.participants.append(participant)
 
-    session.add(account)
-    session.add(match)
     session.commit()
 
     retrieved_match = session.query(Match).filter_by(match_id="match-id").one()
@@ -239,3 +240,6 @@ def test_participant_creation(session):
 
     assert retrieved_participant.match_id == retrieved_match.id
     assert retrieved_participant.match == retrieved_match
+
+    assert retrieved_match.account_id == account.id
+    assert retrieved_match.account == account
