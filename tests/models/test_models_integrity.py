@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 import pytest
 
 from src.models import *
@@ -243,3 +244,20 @@ def test_participant_creation(session):
 
     assert retrieved_match.account_id == account.id
     assert retrieved_match.account == account
+
+
+def test_account_puuid_not_null(session):
+    account = Account(
+        summoner_id="unique-summonerId",
+        account_id="unique-accountId",
+        game_name="TestGame",
+        tag_line="TestTag",
+        profile_iconId=123,
+        summoner_level=30,
+        last_update=123456789
+    )
+
+    session.add(account)
+    
+    with pytest.raises(IntegrityError):
+        session.commit()
