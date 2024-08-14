@@ -40,6 +40,8 @@ def session(engine, tables):
     
     yield session
 
+    if transaction.is_active:
+        transaction.rollback()
+
     session.close()
-    transaction.rollback()
     connection.close()
