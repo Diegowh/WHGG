@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Optional
 
 import httpx
 if TYPE_CHECKING:
-    from src.schemas.riot_server import RiotServer
+    from src.schemas import RiotServer
     from src.config import Settings
 
 
