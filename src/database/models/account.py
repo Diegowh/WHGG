@@ -1,7 +1,7 @@
-from sqlalchemy import String
+from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-from src.database.models.base import Base
+from src.database.database import Base
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -27,6 +27,10 @@ class Account(Base):
     profile_icon_id: Mapped[int]
     summoner_level: Mapped[int]
     last_update: Mapped[int]
+
+    __table_args__ = (
+        UniqueConstraint("game_name", "tag_line", name="_game_name_tag_line_uc")
+    )
     
     def __repr__(self) -> str:
         return (f"Account(puuid={self.puuid!r}, summonerId={self.summoner_id!r}, "
