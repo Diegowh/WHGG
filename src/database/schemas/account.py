@@ -13,7 +13,7 @@ class AccountBase(BaseModel):
     account_id: str
     game_name: str
     tag_line: str
-    profile_iconId: int
+    profile_icon_id: int
     summoner_level: int
     last_update: int
 
@@ -27,7 +27,7 @@ class AccountUpdate(BaseModel):
     account_id: Optional[str] = None
     game_name: Optional[str] = None
     tag_line: Optional[str] = None
-    profile_iconId: Optional[int] = None
+    profile_icon_id: Optional[int] = None
     summoner_level: Optional[int] = None
     last_update: Optional[int] = None
 
