@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from src.database.models.base import Base
+from src.database.database import Base
 
 
 # https://ddragon.leagueoflegends.com/api/versions.json
