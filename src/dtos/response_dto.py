@@ -6,7 +6,7 @@ from src.dtos.league_entry_dto import LeagueEntryDto
 from src.dtos.match_dto import MatchDto
 from src.dtos.profile_dto import ProfileDto
 from src.dtos.summoner_dto import SummonerDTO
-from src.models.league_entry import LeagueEntry
+from src.database.models.league_entry import LeagueEntry
 
 
 class ResponseDto(BaseModel):
