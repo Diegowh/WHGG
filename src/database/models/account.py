@@ -24,13 +24,13 @@ class Account(Base):
     account_id: Mapped[str] = mapped_column(String(56), unique=True)
     game_name: Mapped[str]
     tag_line: Mapped[str]
-    profile_iconId: Mapped[int]
+    profile_icon_id: Mapped[int]
     summoner_level: Mapped[int]
     last_update: Mapped[int]
     
     def __repr__(self) -> str:
-        return (f"Account(puuid={self.puuid!r}, summonerId={self.summonerId!r}, "
-                f"accountId={self.accountId!r}, gameName={self.gameName!r}, "
-                f"tagLine={self.tagLine!r}, profileIconId={self.profileIconId!r}, "
-                f"revisionDate={self.revisionDate!r}, summonerLevel={self.summonerLevel!r}, "
+        return (f"Account(puuid={self.puuid!r}, summonerId={self.summoner_id!r}, "
+                f"accountId={self.account_id!r}, gameName={self.game_name!r}, "
+                f"tagLine={self.tag_line!r}, profileIconId={self.profile_icon_id!r}, "
+                f"lastUpdate={self.last_update!r}, summonerLevel={self.summoner_level!r}, "
                 f"league_entries={self.league_entries!r}, matches={self.matches!r})")
