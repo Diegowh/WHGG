@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,3 +16,5 @@ class Settings(BaseSettings):
     DB_PORT: str
 
     model_config = SettingsConfigDict(env_file='.env')
+
+    season_start_timestamp = int(datetime(2024, 1, 10).timestamp())
