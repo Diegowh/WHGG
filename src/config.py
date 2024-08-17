@@ -17,4 +17,5 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file='.env')
 
+    # https://dotesports.com/league-of-legends/news/start-and-end-dates-for-all-league-of-legends-seasons
     season_start_timestamp = int(datetime(2024, 1, 10).timestamp())
