@@ -19,17 +19,13 @@ from typing import TYPE_CHECKING, Optional
 
 import httpx
 if TYPE_CHECKING:
-    from src.schemas import RiotServer
     from src.config import Settings
 
 
 class RiotQuerier:
     
-    def __init__(self, server: 'RiotServer', settings: 'Settings') -> None:
+    def __init__(self, settings: 'Settings') -> None:
         
-        self._server = server.name
-        self._region = server.region
-        self._platform = server.platform
         self._base_url = "https://{server}.api.riotgames.com"
 
         # Region
@@ -40,19 +36,16 @@ class RiotQuerier:
         # Platform
         self._summoner_endpoint = "/lol/summoner/v4/summoners/by-puuid/{puuid}"  
         self._league_entry_endpoint = "/lol/league/v4/entries/by-summoner/{summoner_id}"  
-        self._client = httpx.AsyncClient(headers={"X-Riot-Token": settings.RIOT_API_KEY})
-    
-    async def _fetch(self, endpoint: str, method: str = 'GET', params: Optional[dict] = None, data: Optional[dict] = None, **kwargs):
-        url = (self._base_url + endpoint).format(
-            server=self.set_server(endpoint),
-            **kwargs
-        )
+
+        self._client = httpx.Client(headers={"X-Riot-Token": settings.RIOT_API_KEY})
+
+    def _fetch(self, url: str, method: str = 'GET', params: Optional[dict] = None, data: Optional[dict] = None):
 
         try:
             if method == 'GET':
-                response = await self._client.get(url, params=params)
+                response = self._client.get(url, params=params)
             else:
-                response = await self._client.request(method=method, url=url, json=data)
+                response = self._client.request(method=method, url=url, json=data)
 
             response.raise_for_status()
             return response.json()
@@ -60,37 +53,36 @@ class RiotQuerier:
         except httpx.HTTPStatusError as e:
             print(f"HTTP Error occurred: {e.response.status_code} - {e.response.text}")
             return None
-
-
-    def set_server(self, endpoint: str) -> str:
-        """
-        Asigna un servidor válido en base al endpoint.
-        Algunos endpoints requieren como servidor una 'platform' y otros una 'region'.
-
-        Region se refiere a "Europe", "America", etc.
-        Platform se refire a "euw1", "na1", etc.
-        """
-        if endpoint == self._account_endpoint or endpoint == self._match_endpoint or endpoint == self._matches_endpoint:
-            return self._region
-        return self._platform
     
 
-    async def get_account_by_riot_id(self, game_name: str, tag_line: str) -> dict:
+    def get_account_by_riot_id(self, game_name: str, tag_line: str, region: str) -> dict:
         """Retorna el resultado de: https://developer.riotgames.com/apis#account-v1/GET_getByRiotId"""
-        return await self._fetch(
-            endpoint=self._account_endpoint, 
-            game_name=game_name, 
+        url = (self._base_url + self._account_endpoint).format(
+            server=region,
+            game_name=game_name,
             tag_line=tag_line
         )
+        return self._fetch(url)
 
-    async def get_summoner_by_puuid(self, puuid: str) -> dict:
+    def get_summoner_by_puuid(self, puuid: str, platform: str) -> dict:
         """Retorna el resultado de: https://developer.riotgames.com/apis#summoner-v4/GET_getByPUUID"""
-        return await self._fetch(
-            endpoint=self._summoner_endpoint,
+        url = (self._base_url + self._summoner_endpoint).format(
+            server=platform,
             puuid=puuid
         )
+        return self._fetch(url)
     
-    async def get_matches_by_puuid(self, puuid: str, start_time: int = None, end_time: int = None, queue: int = None, type: str = None, start: int = 0, count: int = 20) -> list[str]:
+    def get_matches_by_puuid(
+            self, 
+            puuid: str, 
+            region: str,
+            start_time: int = None, 
+            end_time: int = None, 
+            queue: int = None, 
+            type: str = None, 
+            start: int = 0, 
+            count: int = 20
+    ) -> list[str]:
         """Retorna el resultado de: https://developer.riotgames.com/apis#match-v5/GET_getMatchIdsByPUUID"""
 
         # Crea los parametros filtrando los que sean nulos
@@ -103,25 +95,27 @@ class RiotQuerier:
             "count": count
         }.items() if v is not None}
 
-
-        return await self._fetch(
-            endpoint=self._matches_endpoint,
-            puuid=puuid,
-            params=params
+        url = (self._base_url + self._matches_endpoint).format(
+            server=region,
+            puuid=puuid
         )
+
+        return self._fetch(url, params=params)
     
-    async def get_match_by_match_id(self, match_id: str) -> dict:
+    def get_match_by_match_id(self, match_id: str, region: str) -> dict:
         """Retorna el resultado de: https://developer.riotgames.com/apis#match-v5/GET_getMatch"""
 
-        return await self._fetch(
-            endpoint=self._match_endpoint, 
+        url = (self._base_url + self._match_endpoint).format(
+            server=region,
             match_id=match_id
         )
+        return self._fetch(url)
 
-    async def get_league_entry_by_summoner_id(self, summoner_id: str) -> list[dict]:
+    def get_league_entry_by_summoner_id(self, summoner_id: str, platform: str) -> list[dict]:
         """Retorna el resultado de: https://developer.riotgames.com/apis#league-v4/GET_getLeagueEntriesForSummoner"""
 
-        return await self._fetch(
-            endpoint=self._league_entry_endpoint,
+        url = (self._base_url + self._league_entry_endpoint).format(
+            server=platform,
             summoner_id=summoner_id
         )
+        return self._fetch(url)
