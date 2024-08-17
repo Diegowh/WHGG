@@ -30,10 +30,40 @@ class Match(Base):
     game_version: Mapped[str]
     queue_id: Mapped[int]
 
-    # metadata: Mapped[Metadata] = relationship(uselist=False, back_populates="match")
+    assists: Mapped[int]
+    champ_level: Mapped[int]
+    champion_id: Mapped[int]
+    champion_name: Mapped[str]
+    deaths: Mapped[int]
+    gold_earned: Mapped[int]
+    individual_position: Mapped[str]
+    item_0: Mapped[int]
+    item_1: Mapped[int]
+    item_2: Mapped[int]
+    item_3: Mapped[int]
+    item_4: Mapped[int]
+    item_5: Mapped[int]
+    item_6: Mapped[int]
+    kills: Mapped[int]
+    lane: Mapped[str]
+    # https://ddragon.leagueoflegends.com/cdn/14.15.1/data/en_US/runesReforged.json
+    perk_0: Mapped[int]  # Runa Principal
+    perk_1: Mapped[int]  # Runa Secundaria
+    puuid: Mapped[str]
+    riot_id_game_name: Mapped[str]
+    riot_id_tagline: Mapped[str]
+    summoner_1_id: Mapped[int]
+    summoner_2_id: Mapped[int]
+    summoner_id: Mapped[str]
+    team_id: Mapped[int]
+    team_position: Mapped[str]
+    total_damage_dealt_to_champions: Mapped[int]
+    total_minions_killed: Mapped[int]  # Suma neutralMinionsKilled + totalMinionsKilled
+    vision_score: Mapped[int]
+    wards_placed: Mapped[int]
+    win: Mapped[bool]
 
-    # info: Mapped[Info] = relationship(uselist=False, back_populates="match")
-
+    
     def __repr__(self) -> str:
         return (f"Match(id={self.id!r}, account_id={self.account_id!r}, "
                 f"info_id={self.info_id!r})")
