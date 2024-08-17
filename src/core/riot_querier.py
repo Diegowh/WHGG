@@ -111,7 +111,7 @@ class RiotQuerier:
         )
         return self._fetch(url)
 
-    def get_league_entry_by_summoner_id(self, summoner_id: str, platform: str) -> list[dict]:
+    def get_league_entries_by_summoner_id(self, summoner_id: str, platform: str) -> list[dict]:
         """Retorna el resultado de: https://developer.riotgames.com/apis#league-v4/GET_getLeagueEntriesForSummoner"""
 
         url = (self._base_url + self._league_entry_endpoint).format(
