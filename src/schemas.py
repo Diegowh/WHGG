@@ -43,3 +43,34 @@ class RiotServer(BaseModel):
             self.platform = platform
         return self
 
+
+class RiotId(BaseModel):
+    game_name: str
+    tag_line: str
+
+
+    @field_validator('game_name')
+    @classmethod
+    def validate_game_name(cls, v: str) -> str:
+        if not(3 <= len(v) <= 16):
+            raise ValueError("game_name must be between 3 and 16 characters long.")
+        if not v.isalnum():
+            raise ValueError("game_name must contain only alphanumeric characters.")
+        return v
+
+
+    @field_validator('tag_line')
+    @classmethod
+    def validate_tag_line(cls, v: str) -> str:
+        if not (3 <= len(v) <= 5):
+            raise ValueError('tag_line must be between 3 and 5 characters long.')
+        if not v.isalnum():
+            raise ValueError('tag_line must contain only alphanumeric characters.')
+        return v
+    
+
+
+class RequestDto(BaseModel):
+    riot_id: RiotId
+    server: RiotServer
+
