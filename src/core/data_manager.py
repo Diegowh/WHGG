@@ -23,6 +23,8 @@ class DataManager:
         self._region = request.server.region
         self._platform = request.server.platform
         self._summoner_id = None
+        self._puuid = None
+        self._settings = settings
 
     def get(request) -> ResponseDto:
         """
@@ -51,10 +53,10 @@ class DataManager:
             region=self._region
             )
         if account_response is not None:
-            puuid = account_response.get("puuid")
+            self._puuid = account_response.get("puuid")
 
             summoner_response = self.querier.get_summoner_by_puuid(
-                puuid=puuid,
+                puuid=self._puuid,
                 platform=self._platform
             )
             self._summoner_id = summoner_response.get("id")
@@ -64,7 +66,7 @@ class DataManager:
             last_update = int(time.time())
             
             return schemas.AccountCreate(
-                puuid=puuid,
+                puuid=self._puuid,
                 summoner_id=self._summoner_id,
                 account_id=account_id,
                 game_name=self._game_name,
@@ -94,3 +96,33 @@ class DataManager:
                 league_entries.append(league_entry)
             
         return league_entries
+    
+    def _get_all_match_ids(self, season_start: int) -> list[str]:
+        
+        # Obtengo la lista de todos los match_ids desde el
+        # comienzo de la season actual
+        all_match_ids = []
+        start = 0
+        count = 100  # Limitado por la API de RiotGames
+        
+        while True:
+            match_ids = self.querier.get_matches_by_puuid(
+                puuid=self._puuid,
+                region=self._region,
+                start_time=season_start,
+                start=start,
+                count=count
+            )
+            if not match_ids:
+                break
+            
+            all_match_ids.extend(match_ids)
+            
+            if len(match_ids) < count:
+                # Si recibimos menos de 100 partidas, significa que
+                # no recibiremos mas si realizamos una consulta extra
+                break
+            
+            start += count
+        
+        return all_match_ids
