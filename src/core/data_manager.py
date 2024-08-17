@@ -8,8 +8,7 @@ from typing import TYPE_CHECKING
 
 from src.core.riot_querier import RiotQuerier
 import src.database.schemas as schemas
-from src.dtos.response_dto import ResponseDto
-from src.schemas import RequestDto
+from src.schemas import RequestDto, ResponseDto
 
 if TYPE_CHECKING:
     from src.config import Settings

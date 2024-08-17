@@ -1,3 +1,4 @@
+from re import L
 from typing import Optional
 from pydantic import BaseModel, Field, field_validator, model_validator
 
@@ -74,3 +75,6 @@ class RequestDto(BaseModel):
     riot_id: RiotIdDto
     server: RiotServerDto
 
+
+class ResponseDto(BaseModel):
+    ...
