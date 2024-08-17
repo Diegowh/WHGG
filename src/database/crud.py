@@ -1,4 +1,5 @@
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
 import src.database.models as models
 import src.database.schemas as schemas
@@ -81,3 +82,17 @@ def get_matches(db: Session, account_id: int, skip: int = 0, limit: int = 100) -
         .limit(limit)
         .all()
     )
+
+
+# ----- UPDATE ----- #
+def update_account(db: Session, account: schemas.AccountUpdate) -> models.Account:
+    db_account = db.query(models.Account).filter(models.Account.puuid == account.puuid).first()
+    if not db_account:
+        raise HTTPException(status_code=404, detail="Account not found")
+    
+    for field, value in account.model_dump(exclude_unset=True).items():
+        setattr(db_account, field, value)
+
+    db.commit()
+    db.refresh(db_account)
+    return db_account
