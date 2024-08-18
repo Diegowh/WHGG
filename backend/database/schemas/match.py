@@ -1,6 +1,6 @@
-from typing import Optional
-from pydantic import BaseModel
 from typing import TYPE_CHECKING
+
+from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from backend.database.schemas.participant import Participant

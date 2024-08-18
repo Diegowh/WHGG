@@ -1,7 +1,8 @@
 from typing import Optional
-from pydantic import BaseModel, field_validator, model_validator
-from backend.database.schemas.account import Account
 
+from pydantic import BaseModel, field_validator, model_validator
+
+from backend.database.schemas.account import Account
 
 server_mappings: dict[str, tuple[str, str]] = {
     "NA": ("americas", "na1"),

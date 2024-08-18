@@ -1,8 +1,10 @@
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
+
 import backend.database.models as models
 import backend.database.schemas as schemas
+
 
 # ----- CREATE ----- #
 def create_account(db: Session, account: schemas.AccountCreate) -> models.Account:

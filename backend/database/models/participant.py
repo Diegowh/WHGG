@@ -1,7 +1,10 @@
-from sqlalchemy import ForeignKey
-from backend.database.database import Base
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import TYPE_CHECKING
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from backend.database.database import Base
+
 if TYPE_CHECKING:
     from backend.database.models.match import Match
     

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from backend.database.database import init_db
-from backend.api.v1.endpoints import router as api_router
 
+from backend.api.v1.endpoints import router as api_router
+from backend.database.database import init_db
 
 app = FastAPI(title="WH.GG")
 

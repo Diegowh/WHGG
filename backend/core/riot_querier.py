@@ -18,6 +18,7 @@ Hace peticiones a los siguientes endpoints:
 from typing import TYPE_CHECKING, Optional
 
 import httpx
+
 if TYPE_CHECKING:
     from backend.config import Settings
 

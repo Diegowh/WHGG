@@ -1,9 +1,10 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from backend.database.database import Base
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from backend.database.models.champion_stats import ChampionStats
     from backend.database.models.league_entry import LeagueEntry
