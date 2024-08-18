@@ -3,9 +3,9 @@ from pydantic import BaseModel
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.database.schemas.champion_stats import ChampionStats
-    from src.database.schemas.league_entry import LeagueEntry
-    from src.database.schemas.match import Match
+    from backend.database.schemas.champion_stats import ChampionStats
+    from backend.database.schemas.league_entry import LeagueEntry
+    from backend.database.schemas.match import Match
 
 class AccountBase(BaseModel):
     puuid: str

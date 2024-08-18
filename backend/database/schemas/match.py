@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.database.schemas.participant import Participant
+    from backend.database.schemas.participant import Participant
 
 
 

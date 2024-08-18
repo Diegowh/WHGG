@@ -1,9 +1,9 @@
 import httpx
 import pytest
 from unittest.mock import AsyncMock, patch
-from src.services.riot_querier import RiotQuerier
-from src.schemas.riot_server import RiotServer
-from src.config import Settings
+from backend.services.riot_querier import RiotQuerier
+from backend.schemas.riot_server import RiotServer
+from backend.config import Settings
 
 
 @pytest.fixture

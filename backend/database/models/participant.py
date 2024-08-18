@@ -1,9 +1,9 @@
 from sqlalchemy import ForeignKey
-from src.database.database import Base
+from backend.database.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from src.database.models.match import Match
+    from backend.database.models.match import Match
     
 
 class Participant(Base):

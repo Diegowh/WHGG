@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Optional
 
 import httpx
 if TYPE_CHECKING:
-    from src.config import Settings
+    from backend.config import Settings
 
 
 class RiotQuerier:

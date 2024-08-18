@@ -1,7 +1,7 @@
 from sys import exc_info
 from pydantic_core import ValidationError
 import pytest
-from src.schemas.riot_server import RiotServer
+from backend.schemas.riot_server import RiotServer
 
 
 

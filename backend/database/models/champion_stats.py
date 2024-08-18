@@ -1,11 +1,11 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.database.database import Base
+from backend.database.database import Base
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from src.database.models.account import Account
+    from backend.database.models.account import Account
 
 
 class ChampionStats(Base):

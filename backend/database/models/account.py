@@ -1,13 +1,13 @@
 from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
-from src.database.database import Base
+from backend.database.database import Base
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from src.database.models.champion_stats import ChampionStats
-    from src.database.models.league_entry import LeagueEntry
-    from src.database.models.match import Match
+    from backend.database.models.champion_stats import ChampionStats
+    from backend.database.models.league_entry import LeagueEntry
+    from backend.database.models.match import Match
     
 
 class Account(Base):
