@@ -86,6 +86,34 @@ def get_matches(db: Session, account_id: int, skip: int = 0, limit: int = 100) -
     )
 
 
+def get_last_match(db: Session, account_id: int) -> models.Match:
+    return(
+        db.query(models.Match)
+        .filter(models.Match.account_id == account_id)
+        .order_by(models.Match.id.desc())
+        .first()
+    )
+    
+
+def count_matches(db: Session, account_id: int) -> int:
+    return(
+        db.query(models.Match)
+        .filter(models.Match.account_id == account_id)
+        .count()
+    )
+
+
+def get_league_entry_by_queue_type(db: Session, account_id: int, queue_type: str) -> models.LeagueEntry:
+    return (
+        db.query(models.LeagueEntry)
+        .filter(
+            models.LeagueEntry.account_id == account_id,
+            models.LeagueEntry.queue_type == queue_type
+        )
+        .first()
+    )
+    
+
 # ----- UPDATE ----- #
 def update_account(db: Session, account: schemas.AccountUpdate) -> models.Account:
     db_account = db.query(models.Account).filter(models.Account.puuid == account.puuid).first()
@@ -98,3 +126,22 @@ def update_account(db: Session, account: schemas.AccountUpdate) -> models.Accoun
     db.commit()
     db.refresh(db_account)
     return db_account
+
+
+def update_league_entry(db: Session, id: int, league_entry: schemas.LeagueEntryUpdate) -> models.LeagueEntry:
+    db_league_entry = (
+        db.query(models.LeagueEntry)
+        .filter(
+            models.LeagueEntry.account_id == id
+        )
+        .first()
+    )
+    if not db_league_entry:
+        raise HTTPException(status_code=404, detail="LeagueEntry not found")
+
+    for field, value in league_entry.model_dump(exclude_unset=True).items():
+        setattr(db_league_entry, field, value)
+        
+    db.commit()
+    db.refresh(db_league_entry)
+    return db_league_entry
