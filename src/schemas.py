@@ -71,10 +71,7 @@ class RiotIdDto(BaseModel):
     
 
 
-class RequestDto(BaseModel):
+class Request(BaseModel):
     riot_id: RiotIdDto
     server: RiotServerDto
 
-
-class ResponseDto(BaseModel):
-    ...
