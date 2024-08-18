@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from src.database.database import get_db
 from src.core.data_manager import DataManager
-from src.schemas import ResponseDto, Request, RiotIdDto, RiotServerDto
+from src.api.v1.schemas import ResponseDto, Request, RiotIdDto, RiotServerDto
 
 router = APIRouter()
 
