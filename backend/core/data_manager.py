@@ -48,6 +48,106 @@ class DataManager:
         self._db = db
         
         
+    def get(self, request: schemas.Request, db: Session) -> schemas.Response:
+        
+        self.set_game_name(request.riot_id.game_name)
+        self.set_tag_line(request.riot_id.tag_line)
+        self.set_region(request.server.region)
+        self.set_platform(request.server.platform)
+        self.set_db(db)
+        
+        # Compruebo si existe ese account en base de datos
+        account_model = crud.get_account_by_game_name_and_tag_line(
+            db=self._db,
+            game_name=self._game_name,
+            tag_line=self._tag_line
+        )
+        if account_model is not None:
+            
+            # Compruebo el tiempo transcurrido desde la ultima actualizacion/peticion
+            time_now = int(time.time())
+            if time_now - account_model.last_update <= 3600:  # 3600 segundos / 1 hora
+                account = schemas.Account.model_validate(account_model)
+                return schemas.Response(**account.model_dump())
+
+            # Ha pasado mas de 1 hora desde la ultima vez que se solicitaron
+            # Los solicito a la API de RiotGames
+            new_account_data = self._fetch_account()
+            new_account_data = schemas.AccountUpdate(**new_account_data.model_dump())
+            # Actualizo los datos
+            updated_acc = crud.update_account(
+                db=self._db,
+                account=new_account_data
+            )
+            
+            new_league_entries = self._fetch_league_entries()
+            for league_entry in new_league_entries:
+                # No sabemos si existen league entries previas para las queue_type actuales
+                # Por lo tanto comprobamos primero cuales son las queue_type de las 
+                # league entry existentes para saber si actualizar o crear
+                league_entry_exist = crud.get_league_entry_by_queue_type(
+                    db=self._db,
+                    account_id=account_model.id,
+                    queue_type=league_entry.queue_type
+                )
+                if league_entry_exist:
+                    new_league_entry_data = schemas.LeagueEntryUpdate(**league_entry.model_dump())
+                    crud.update_league_entry(
+                        db=self._db,
+                        id=league_entry_exist.id,
+                        league_entry=new_league_entry_data
+                    )
+                else:
+                    crud.create_league_entry(
+                        db=self._db,
+                        league_entry=league_entry,
+                        account_id=account_model.id
+                    )
+
+            # Necesito saber cual es el match mas reciente que existe en la base de datos
+            # Para solicitar unicamente los jugados a partir de ese
+            matches_in_db = crud.count_matches(
+                db=self._db,
+                account_id=account_model.id
+            )
+            new_match_ids = self._get_match_ids(matches_in_db)
+            for match_id in new_match_ids:
+                new_match, new_participants = self._fetch_match_and_participants(match_id)
+                match = crud.create_match(
+                    db=self._db,
+                    match=new_match,
+                    account_id=account_model.id
+                )
+                for participant in new_participants:
+                    crud.create_participant(
+                        db=self._db,
+                        participant=participant,
+                        match_id=match.id
+                    )
+
+            
+        updated_account_model = crud.get_account_by_game_name_and_tag_line(
+        db=self._db,
+        game_name=self._game_name,
+        tag_line=self._tag_line
+        )
+        return schemas.Response.model_validate(updated_account_model)
+            
+
+        """
+        Comprueba si existen en base de datos
+        Si existen en la base de datos
+        Comprueba la fecha de la ultima actualizacion de estos
+        Si ha pasado menos tiempo del 'treshold'
+        Los retorna
+        Si ha pasado mas tiempo del 'treshold'
+        Los obtiene de la API de Riot y los actualiza en la DB
+        Los retorna
+        Si no existen en la base de datos
+        Los obtiene de la API de Riot y los crea en la DB
+        Los Retorna
+        """
+    
     def _fetch_account(self) -> schemas.AccountCreate:
         
         account_response = self.querier.get_account_by_riot_id(
@@ -100,13 +200,13 @@ class DataManager:
             
         return league_entries
     
-    def _get_all_match_ids(self) -> list[str]:
+    def _get_match_ids(self, start_index: int = 0) -> list[str]:
         
         # Obtengo la lista de todos los match_ids desde el
         # comienzo de la season actual
         all_match_ids = []
-        start = 0
-        count = 100  # Limitado por la API de RiotGames
+        start = start_index
+        count = 100 # Limitado por la API de RiotGames
         
         while True:
             match_ids = self.querier.get_matches_by_puuid(
@@ -202,4 +302,3 @@ class DataManager:
             team_id=participant_data.get("teamId"),
             team_position=participant_data.get("teamPosition")
         )
-        
