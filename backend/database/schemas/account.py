@@ -42,3 +42,6 @@ class Account(AccountBase):
     class Config:
         orm_mode = True
 
+
+class Response(Account):
+    ...
