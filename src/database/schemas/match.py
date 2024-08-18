@@ -39,7 +39,7 @@ class MatchBase(BaseModel):
     perk_1: int  # Runa Secundaria
     puuid: str
     riot_id_game_name: str
-    riot_id_tagline: str
+    riot_id_tag_line: str
     summoner_1_id: int
     summoner_2_id: int
     summoner_id: str

@@ -51,7 +51,7 @@ class Match(Base):
     perk_1: Mapped[int]  # Runa Secundaria
     puuid: Mapped[str]
     riot_id_game_name: Mapped[str]
-    riot_id_tagline: Mapped[str]
+    riot_id_tag_line: Mapped[str]
     summoner_1_id: Mapped[int]
     summoner_2_id: Mapped[int]
     summoner_id: Mapped[str]
