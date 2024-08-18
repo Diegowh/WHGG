@@ -9,10 +9,8 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import Session
 
 import backend.database.schemas as schemas
-from backend.api.v1.schemas import Request, Response
 from backend.core.riot_querier import RiotQuerier
 from backend.database import crud
-from backend.database.models import account
 from backend.database.schemas.match import MatchCreate
 
 if TYPE_CHECKING:
