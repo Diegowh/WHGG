@@ -1,7 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 import pytest
 
-from backend.models import *
+from backend.database.models import *
 
 
 def test_account_creation(session):
