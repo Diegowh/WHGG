@@ -6,11 +6,12 @@ El propósito principal del DataManager es centralizar la lógica de negocio rel
 import time
 from typing import TYPE_CHECKING
 
+from sqlalchemy import true
 from sqlalchemy.orm import Session
-
+from sqlalchemy.exc import NoResultFound
 import backend.database.schemas as schemas
 from backend.core.riot_querier import RiotQuerier
-from backend.database import crud
+from backend.database import crud, models
 from backend.database.schemas.match import MatchCreate
 
 if TYPE_CHECKING:
@@ -106,7 +107,7 @@ class DataManager:
 
             # Necesito saber cual es el match mas reciente que existe en la base de datos
             # Para solicitar unicamente los jugados a partir de ese
-            matches_in_db = crud.count_matches(
+            matches_in_db: int = crud.count_matches(
                 db=self._db,
                 account_id=account_model.id
             )
@@ -118,21 +119,24 @@ class DataManager:
                     match=new_match,
                     account_id=account_model.id
                 )
+                
+                self._create_or_update_champion_stats(match)
+
+
                 for participant in new_participants:
                     crud.create_participant(
                         db=self._db,
                         participant=participant,
                         match_id=match.id
                     )
-
-            
-        updated_account_model = crud.get_account_by_game_name_and_tag_line(
-        db=self._db,
-        game_name=self._game_name,
-        tag_line=self._tag_line
-        )
-        return schemas.Response.model_validate(updated_account_model)
-            
+                
+        
+            else:
+                # Si no existe una entrada previa para el Account requestado
+                new_account_data = self._fetch_account()
+                new_account_data = schemas.AccountCreate(**new_account_data.model_dump())
+                crud.create_account(db=self._db, account=new_account_data)
+                
 
         """
         Comprueba si existen en base de datos
@@ -147,7 +151,8 @@ class DataManager:
         Los obtiene de la API de Riot y los crea en la DB
         Los Retorna
         """
-    
+        
+        
     def _fetch_account(self) -> schemas.AccountCreate:
         
         account_response = self.querier.get_account_by_riot_id(
@@ -302,3 +307,77 @@ class DataManager:
             team_id=participant_data.get("teamId"),
             team_position=participant_data.get("teamPosition")
         )
+        
+        
+    def _create_or_update_champion_stats(self, match: models.Match):
+        try:
+            cs_instance = crud.get_champion_stats(
+                self._db,
+                account_id=match.account_id,
+                name=match.champion_name
+            )
+            
+            games_played = cs_instance.games_played + 1
+            k_avg = self._calculate_avg(
+                match.kills, cs_instance.kill_avg, games_played
+            )
+            d_avg = self._calculate_avg(
+                match.deaths, cs_instance.death_avg, games_played
+            )
+            a_avg = self._calculate_avg(
+                match.assists, cs_instance.assist_avg, games_played
+            )
+            new_kda = self._calculate_kda(
+                k_avg, d_avg, a_avg
+            )
+            new_wins = cs_instance + 1 if match.win else None
+            new_losses = cs_instance + 1 if not match.win else None
+            new_wr = self._calculate_winrate(new_wins, new_losses)
+            champion_stats_update = schemas.ChampionStatsUpdate(
+                games_played=cs_instance.games_played + 1,
+                kill_avg=k_avg,
+                death_avg=d_avg,
+                assist_avg=a_avg,
+                kda=new_kda,
+                wins=new_wins,
+                losses=new_losses,
+                winrate=new_wr,
+            )
+            
+            crud.update_champion_stats(
+                db=self._db,
+                id=cs_instance.id,
+                champion_stats=champion_stats_update
+            )
+            
+        except NoResultFound:
+            # Creo la primera entrada ChampionStats
+            # para ese Account.id y champion_name
+            new_cs_instance = crud.create_champion_stats(
+                db=self._db,
+                account_id=match.account_id,
+                champion_stats=schemas.ChampionStatsCreate(
+                    name=match.champion_name,
+                    kill_avg=match.kills,
+                    death_avg=match.deaths,
+                    assists_avg=match.kills,
+                    kda=self._calculate_kda(match.kills, match.deaths, match.assists),
+                    winrate=self._calculate_winrate(match.wins, 1),
+                    games_played=1,
+                    wins= 1 if match.win else 0,
+                    losses=1 if not match.win else 1,
+                )
+            )
+
+    def _calculate_kda(self, k: float, d: float, a: float) -> float:
+        if d == 0:
+            d = 1  # Para evitar division por 0
+        return round(((k + a) / d), 2)
+    
+    def _calculate_winrate(self, wins: int, games: int) -> int:
+        return int((wins / games) * 100)
+    
+    def _calculate_avg(self, unit: int, prev_avg: int, games_played: int) -> float:
+        prev_unit = prev_avg * (games_played - 1)
+        total_unit = prev_unit + unit
+        return round((total_unit / games_played), 2)
