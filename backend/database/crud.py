@@ -1,10 +1,12 @@
 
+from sqlite3 import IntegrityError
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
-
+from sqlalchemy import func, select
 import backend.database.models as models
+from backend.database.models.champion_stats import ChampionStats
 import backend.database.schemas as schemas
-
+from sqlalchemy.exc import NoResultFound
 
 # ----- CREATE ----- #
 def create_account(db: Session, account: schemas.AccountCreate) -> models.Account:
@@ -51,55 +53,61 @@ def create_participant(db: Session, participant: schemas.ParticipantCreate, matc
 
 
 # ----- READ ----- #
-def get_account(db: Session, account_id: int) -> models.Account | None:
-    return db.query(models.Account).filter(models.Account.id == account_id).first()
+def get_account(db: Session, account_id: int) -> models.Account:
+    return db.get(models.Account, account_id)
 
 
 def get_accounts(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Account).offset(skip).limit(limit).all()
+    stmt = select(models.Account).offset(skip).limit(limit)
+    return db.execute(statement=stmt).scalars().all()
 
 
-def get_account_by_puuid(db: Session, puuid: str) -> models.Account | None:
-    return db.query(models.Account).filter(models.Account.puuid == puuid).first()
+def get_account_by_puuid(db: Session, puuid: str) -> models.Account:
+    stmt = select(models.Account).where(models.Account.puuid == puuid)
+    return db.execute(statement=stmt).scalar_one_or_none()
 
 
 def get_account_by_game_name_and_tag_line(db: Session, game_name: str, tag_line: str) -> models.Account:
-    return (
-        db.query(models.Account)
+    stmt = (
+        select(models.Account)
         .options(
             joinedload(models.Account.league_entries),
             joinedload(models.Account.matches),
-            joinedload(models.Account.champion_stats)
+            joinedload(models.ChampionStats)  # Especifico modelos.ChampionStats en lugar de models.Account.champion_stats
         )
-        .filter(models.Account.game_name == game_name, models.Account.tag_line == tag_line)
-        .first()
+        .where(
+            models.Account.game_name == game_name,
+            models.Account.tag_line == tag_line
+        )
     )
+    return db.scalar(stmt)
 
 
 def get_matches(db: Session, account_id: int, skip: int = 0, limit: int = 100) -> list[models.Match]:
-    return (
-        db.query(models.Match)
-        .filter(models.Match.account_id == account_id)
+    stmt = (
+        select(models.Match)
+        .where(models.Match.account_id == account_id)
         .offset(skip)
         .limit(limit)
-        .all()
     )
+    return db.execute(stmt).scalars().all()
 
 
 def get_last_match(db: Session, account_id: int) -> models.Match:
-    return(
-        db.query(models.Match)
-        .filter(models.Match.account_id == account_id)
+    stmt = (
+        select(models.Match)
+        .where(models.Match.account_id == account_id)
         .order_by(models.Match.id.desc())
-        .first()
+        .limit(1)
     )
+    return db.execute(stmt).scalar_one_or_none()
     
 
 def count_matches(db: Session, account_id: int) -> int:
-    return(
-        db.query(models.Match)
-        .filter(models.Match.account_id == account_id)
-        .count()
+    a = db.scalar(
+        select(func.count())
+        .select_from(models.Match)
+        .where(models.Match.account_id == account_id)
     )
 
 
@@ -120,8 +128,8 @@ def update_account(db: Session, account: schemas.AccountUpdate) -> models.Accoun
     if not db_account:
         raise HTTPException(status_code=404, detail="Account not found")
     
-    for field, value in account.model_dump(exclude_unset=True).items():
-        setattr(db_account, field, value)
+    for key, value in account.model_dump(exclude_unset=True).items():
+        setattr(db_account, key, value)
 
     db.commit()
     db.refresh(db_account)
@@ -139,9 +147,97 @@ def update_league_entry(db: Session, id: int, league_entry: schemas.LeagueEntryU
     if not db_league_entry:
         raise HTTPException(status_code=404, detail="LeagueEntry not found")
 
-    for field, value in league_entry.model_dump(exclude_unset=True).items():
-        setattr(db_league_entry, field, value)
+    for key, value in league_entry.model_dump(exclude_unset=True).items():
+        setattr(db_league_entry, key, value)
         
     db.commit()
     db.refresh(db_league_entry)
     return db_league_entry
+
+
+def update_champion_stats(db: Session, id: int, champion_stats: schemas.ChampionStatsUpdate) -> models.ChampionStats:
+    db_champion_stats = (
+        db.query(models.ChampionStats)
+        .filter(
+            models.ChampionStats.id == id
+        )
+        .first()
+    )
+    if not db_champion_stats:
+        raise HTTPException(status_code=404, detail="ChampionStats not found")
+    
+    for key, value in champion_stats.model_dump(exclude_unset=True).items():
+        setattr(db_champion_stats, key, value)
+        
+    db.commit()
+    db.refresh(db_champion_stats)
+    return db_champion_stats
+
+    
+def get_or_create_champion_stats(db: Session, account_id: int, champion_stats: schemas.ChampionStatsUpdate) -> models.ChampionStats:
+    
+    try:
+        champion_stats_entry = (
+            db.query(models.ChampionStats)
+            .filter_by(account_id=account_id, name=champion_stats.name)
+            .one()
+        )
+        
+        for key, value in champion_stats.model_dump(exclude_unset=True).items():
+            setattr(champion_stats_entry, key, value)
+        
+        db.commit()
+        db.refresh(champion_stats_entry)
+        return champion_stats_entry
+
+    except NoResultFound:
+        new_champion_stats = models.ChampionStats(
+            account_id=account_id,
+            **champion_stats.model_dump()
+        )
+        db.add(new_champion_stats)
+        db.commit()
+        db.refresh(new_champion_stats)
+        return new_champion_stats
+
+def get_champion_stats(db: Session, account_id: int, name: str) -> models.ChampionStats | None:
+    stmt = (
+        select(models.ChampionStats)
+        .where(
+            models.ChampionStats.account_id==account_id,
+            models.ChampionStats.name==name
+        )
+    )
+    return db.execute(stmt).scalars().one_or_none()
+    
+
+def _get_one_or_create(
+    db: Session, 
+    model, 
+    create_method='',
+    create_method_kwargs=None,
+    **kwargs
+):
+    try:
+        return db.query(model).filter_by(**kwargs).one(), False
+    
+    except NoResultFound:
+        kwargs.update(create_method_kwargs or {})
+        created = getattr(model, create_method, model)(**kwargs)
+        try:
+            db.add(created)
+            db.flush()
+            return created, True
+        except IntegrityError:
+            db.rollback()
+            return db.query(model).filter_by(**kwargs).one(), False
+        
+        
+def get_or_create_champion_stats(db: Session, account_id: int, name: str, champion_stats: schemas.ChampionStatsCreate):
+    return _get_one_or_create(
+        db=db,
+        model=models.ChampionStats,
+        name=name,
+        account_id=account_id,
+        champion_stats=champion_stats
+    )
