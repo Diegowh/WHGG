@@ -18,12 +18,14 @@ class ChampionStats(Base):
     account: Mapped["Account"] = relationship(back_populates="champion_stats")
 
     name: Mapped[str]
-    kda: Mapped[float]
+    games_played: Mapped[int]
     kill_avg: Mapped[float]
     death_avg: Mapped[float]
     assist_avg: Mapped[float]
+    kda: Mapped[float]
+    wins: Mapped[int]
+    losses: Mapped[int]
     winrate: Mapped[int]
-    games_played: Mapped[int]
 
     def __repr__(self) -> str:
         return (f"ChampionStats(id={self.id!r}, account_id={self.account_id!r}, "
