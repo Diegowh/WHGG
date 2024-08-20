@@ -8,7 +8,8 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import true
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, IntegrityError
+from backend.database.models import account
 import backend.database.schemas as schemas
 from backend.core.riot_querier import RiotQuerier
 from backend.database import crud, models
@@ -47,7 +48,12 @@ class DataManager:
         
     def set_db(self, db: Session) -> None:
         self._db = db
+    
+    def set_summoner_id(self, summoner_id) -> None:
+        self._summoner_id = summoner_id
         
+    def set_puuid(self, puuid) -> None:
+        self._puuid = puuid
         
     def get(self, request: schemas.Request, db: Session) -> schemas.Response:
         
@@ -58,101 +64,56 @@ class DataManager:
         self.set_db(db)
         
         # Compruebo si existe ese account en base de datos
-        account_model = crud.get_account_by_game_name_and_tag_line(
+        account_instance = self._get_or_create_account_model()
+        
+        # Compruebo si he de actualizar o no los datos del account
+        # Si esta recien creado, y no tiene las entradas de League Entry, Match o ChampionStats
+        # el last_update sera None
+        now = int(time.time())
+        if (account_instance.last_update is not None and (now - account_instance.last_update) <= 3600):
+            return self._get_response(db_obj=account_instance)
+        
+        
+        self._create_or_update_league_entries (account_instance)
+        
+        matches_in_db: int = crud.count_matches(
             db=self._db,
-            game_name=self._game_name,
-            tag_line=self._tag_line
+            db_obj=account_instance
         )
-        if account_model is not None:
-            
-            # Compruebo el tiempo transcurrido desde la ultima actualizacion/peticion
-            time_now = int(time.time())
-            if time_now - account_model.last_update <= 3600:  # 3600 segundos / 1 hora
-                account = schemas.Account.model_validate(account_model)
-                return schemas.Response(**account.model_dump())
-
-            # Ha pasado mas de 1 hora desde la ultima vez que se solicitaron
-            # Los solicito a la API de RiotGames
-            new_account_data = self._fetch_account()
-            new_account_data = schemas.AccountUpdate(**new_account_data.model_dump())
-            # Actualizo los datos
-            updated_acc = crud.update_account(
+        match_ids = self._get_match_ids(start_index=matches_in_db)
+        for match_id in match_ids:
+            match, participants = self._fetch_match_and_participants(match_id)
+            match = crud.create_match(
                 db=self._db,
-                account=new_account_data
+                match=match,
+                account_id=account_instance.id
             )
             
-            new_league_entries = self._fetch_league_entries()
-            for league_entry in new_league_entries:
-                # No sabemos si existen league entries previas para las queue_type actuales
-                # Por lo tanto comprobamos primero cuales son las queue_type de las 
-                # league entry existentes para saber si actualizar o crear
-                league_entry_exist = crud.get_league_entry_by_queue_type(
+            self._create_or_update_champion_stats(match)
+            
+            for participant in participants:
+                crud.create_participant(
                     db=self._db,
-                    account_id=account_model.id,
-                    queue_type=league_entry.queue_type
+                    participant=participant,
+                    match_id=match.id
                 )
-                if league_entry_exist:
-                    new_league_entry_data = schemas.LeagueEntryUpdate(**league_entry.model_dump())
-                    crud.update_league_entry(
-                        db=self._db,
-                        id=league_entry_exist.id,
-                        league_entry=new_league_entry_data
-                    )
-                else:
-                    crud.create_league_entry(
-                        db=self._db,
-                        league_entry=league_entry,
-                        account_id=account_model.id
-                    )
-
-            # Necesito saber cual es el match mas reciente que existe en la base de datos
-            # Para solicitar unicamente los jugados a partir de ese
-            matches_in_db: int = crud.count_matches(
-                db=self._db,
-                account_id=account_model.id
+        
+        # Una vez termina de crear todas las entradas a las tablas relacionadas con Account
+        # es cuando se asigna el last_update
+        now = int(time.time())
+        account_instance = crud.update_account_last_update(
+            db=self._db, 
+            db_obj=account_instance,
+            last_update=now
             )
-            new_match_ids = self._get_match_ids(matches_in_db)
-            for match_id in new_match_ids:
-                new_match, new_participants = self._fetch_match_and_participants(match_id)
-                match = crud.create_match(
-                    db=self._db,
-                    match=new_match,
-                    account_id=account_model.id
-                )
-                
-                self._create_or_update_champion_stats(match)
 
-
-                for participant in new_participants:
-                    crud.create_participant(
-                        db=self._db,
-                        participant=participant,
-                        match_id=match.id
-                    )
-                
+        return self._get_response(db_obj=account_instance)
         
-            else:
-                # Si no existe una entrada previa para el Account requestado
-                new_account_data = self._fetch_account()
-                new_account_data = schemas.AccountCreate(**new_account_data.model_dump())
-                crud.create_account(db=self._db, account=new_account_data)
-                
-
-        """
-        Comprueba si existen en base de datos
-        Si existen en la base de datos
-        Comprueba la fecha de la ultima actualizacion de estos
-        Si ha pasado menos tiempo del 'treshold'
-        Los retorna
-        Si ha pasado mas tiempo del 'treshold'
-        Los obtiene de la API de Riot y los actualiza en la DB
-        Los retorna
-        Si no existen en la base de datos
-        Los obtiene de la API de Riot y los crea en la DB
-        Los Retorna
-        """
-        
-        
+    def _get_response(self, db_obj: models.Account) -> schemas.Response:
+        response = crud.get_response(db=self._db, db_obj=db_obj)
+        return schemas.Response.model_validate(response)
+    
+    
     def _fetch_account(self) -> schemas.AccountCreate:
         
         account_response = self.querier.get_account_by_riot_id(
@@ -161,28 +122,27 @@ class DataManager:
             region=self._region
             )
         if account_response is not None:
-            self._puuid = account_response.get("puuid")
+            puuid = account_response.get("puuid")
 
             summoner_response = self.querier.get_summoner_by_puuid(
-                puuid=self._puuid,
+                puuid=puuid,
                 platform=self._platform
             )
-            self._summoner_id = summoner_response.get("id")
+            summoner_id = summoner_response.get("id")
             account_id = summoner_response.get("accountId")
             profile_icon_id = summoner_response.get("profileIconId")
             summoner_level = summoner_response.get("summonerLevel")
-            last_update = int(time.time())
             
             return schemas.AccountCreate(
-                puuid=self._puuid,
-                summoner_id=self._summoner_id,
+                puuid=puuid,
+                summoner_id=summoner_id,
                 account_id=account_id,
                 game_name=self._game_name,
                 tag_line=self._tag_line,
                 profile_icon_id=profile_icon_id,
                 summoner_level=summoner_level,
-                last_update=last_update
             )
+        return None
             
     def _fetch_league_entries(self) -> list[schemas.LeagueEntryCreate]:
         league_entries = []
@@ -298,6 +258,30 @@ class DataManager:
             )
             return (match, participants)
     
+    def _create_match_entries(self, acc_instance: models.Account):
+        matches_in_db: int = crud.count_matches(
+            db=self._db,
+            db_obj=acc_instance
+        )
+        match_ids = self._get_match_ids(start_index=matches_in_db)
+        for match_id in match_ids:
+            match, participants = self._fetch_match_and_participants(match_id)
+            match = crud.create_match(
+                db=self._db,
+                account=acc_instance,
+                match=match
+            )
+            
+            self._create_or_update_champion_stats(match)
+            
+            for participant in participants:
+                crud.create_participant(
+                    db=self._db,
+                    participant=participant,
+                    match_id=match.id
+                )
+        
+        
     def _create_participant(self, participant_data: dict) -> schemas.ParticipantCreate:
         return schemas.ParticipantCreate(
             champion_id=participant_data.get("championId"),
@@ -369,6 +353,55 @@ class DataManager:
                 )
             )
 
+    def _get_or_create_account_model(self) -> models.Account:
+        account_model = crud.get_account_by_game_name_and_tag_line(
+            db=self._db,
+            game_name=self._game_name,
+            tag_line=self._tag_line
+        )
+        if account_model is None:
+            new_account_data = self._fetch_account()
+            self.set_summoner_id(new_account_data.summoner_id)
+            self.set_puuid(new_account_data.puuid)
+            account_model = crud.create_account(db=self._db, account=new_account_data) 
+        
+        return account_model
+
+
+    def _create_or_update_league_entries(self, account_instance: models.Account):
+        league_entries = self._fetch_league_entries()
+        for league_entry in league_entries:
+            existing_entry = crud.get_league_entry_by_queue_type(
+                db=self._db,
+                account_id=account_instance.id,
+                queue_type=league_entry.queue_type
+            )
+            
+            if existing_entry:
+                update_data = schemas.LeagueEntryUpdate(
+                    tier=league_entry.tier,
+                    rank=league_entry.rank,
+                    league_points=league_entry.league_points,
+                    wins=league_entry.wins,
+                    losses=league_entry.losses
+                )
+                crud.update_league_entry(
+                    db=self._db,
+                    db_obj=existing_entry,
+                    obj_in=update_data
+                )
+            
+            else:
+                try:
+                    crud.create_league_entry(
+                        db=self._db,
+                        league_entry=league_entry,
+                        account_id=account_instance.id
+                    )
+                except IntegrityError:
+                    self._db.rollback()
+                    print("Error inesperado al crear la entrada LeagueEntry")
+            
     def _calculate_kda(self, k: float, d: float, a: float) -> float:
         if d == 0:
             d = 1  # Para evitar division por 0
