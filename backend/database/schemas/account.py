@@ -16,7 +16,7 @@ class AccountBase(BaseModel):
     tag_line: str
     profile_icon_id: int
     summoner_level: int
-    last_update: int
+    last_update: Optional[int] = None
 
 
 class AccountCreate(AccountBase):

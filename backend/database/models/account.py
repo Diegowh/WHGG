@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import String, UniqueConstraint
+from sqlalchemy import Integer, String, UniqueConstraint
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from backend.database.database import Base
@@ -27,7 +27,7 @@ class Account(Base):
     tag_line: Mapped[str]
     profile_icon_id: Mapped[int]
     summoner_level: Mapped[int]
-    last_update: Mapped[int]
+    last_update: Mapped[Optional[int]]
 
     __table_args__ = (
         UniqueConstraint("game_name", "tag_line", name="_game_name_tag_line_uc")
