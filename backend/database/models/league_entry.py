@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database.database import Base
@@ -24,6 +24,10 @@ class LeagueEntry(Base):
     league_points: Mapped[int]
     wins: Mapped[int]
     losses: Mapped[int]
+    
+    __table_args__ = (
+        UniqueConstraint("account_id", "queue_type", name="_account_id_queue_type_uc")
+    )
     
     def __repr__(self) -> str:
         return f"LeagueEntry(id={self.id!r}, summonerId={self.summonerId!r}, tier={self.tier!r}, rank={self.rank!r})"
