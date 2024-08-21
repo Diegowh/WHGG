@@ -5,8 +5,8 @@ from pydantic import BaseModel
 
 class LeagueEntryBase(BaseModel):
     queue_type: str
-    tier: str
-    rank: str
+    tier: Optional[str] = None
+    rank: Optional[str] = None
     league_points: int
     wins: int
     losses: int
