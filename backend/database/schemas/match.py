@@ -1,9 +1,6 @@
-from typing import TYPE_CHECKING
-
 from pydantic import BaseModel
 
-if TYPE_CHECKING:
-    from backend.database.schemas.participant import Participant
+from backend.database.schemas.participant import Participant
 
 
 
@@ -61,4 +58,4 @@ class Match(MatchBase):
     participants: list["Participant"] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
