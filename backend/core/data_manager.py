@@ -223,7 +223,7 @@ class DataManager:
                 perk_0=perk0,
                 perk_1=perk1,
                 riot_id_game_name=player_data.get("riotIdGameName"),
-                riot_id_tag_line=player_data.get("riotIdTagLine"),
+                riot_id_tag_line=player_data.get("riotIdTagline"),
                 summoner_1_id=player_data.get("summoner1Id"),
                 summoner_2_id=player_data.get("summoner2Id"),
                 summoner_id=player_data.get("summonerId"),
