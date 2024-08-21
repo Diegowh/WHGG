@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -19,8 +19,8 @@ class LeagueEntry(Base):
     account: Mapped["Account"] = relationship(back_populates="league_entries")
     
     queue_type: Mapped[str]
-    tier: Mapped[str]
-    rank: Mapped[str]
+    tier: Mapped[Optional[str]]
+    rank: Mapped[Optional[str]]
     league_points: Mapped[int]
     wins: Mapped[int]
     losses: Mapped[int]
@@ -30,4 +30,4 @@ class LeagueEntry(Base):
     )
     
     def __repr__(self) -> str:
-        return f"LeagueEntry(id={self.id!r}, summonerId={self.summonerId!r}, tier={self.tier!r}, rank={self.rank!r})"
+        return f"LeagueEntry(id={self.id!r}, account_id={self.account_id!r}, queue_type={self.queue_type!r}, tier={self.tier!r}, rank={self.rank!r}, league_points={self.league_points!r}, wins={self.wins!r}, losses={self.losses!r}"

@@ -5,10 +5,9 @@ from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from backend.database.database import Base
 
-if TYPE_CHECKING:
-    from backend.database.models.champion_stats import ChampionStats
-    from backend.database.models.league_entry import LeagueEntry
-    from backend.database.models.match import Match
+from backend.database.models.champion_stats import ChampionStats
+from backend.database.models.league_entry import LeagueEntry
+from backend.database.models.match import Match
     
 
 class Account(Base):
@@ -38,4 +37,5 @@ class Account(Base):
                 f"accountId={self.account_id!r}, gameName={self.game_name!r}, "
                 f"tagLine={self.tag_line!r}, profileIconId={self.profile_icon_id!r}, "
                 f"lastUpdate={self.last_update!r}, summonerLevel={self.summoner_level!r}, "
-                f"league_entries={self.league_entries!r}, matches={self.matches!r})")
+                f"league_entries={self.league_entries!r}, matches={self.matches!r},"
+                f"champion_stats={self.champion_stats!r}")
