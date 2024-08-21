@@ -57,7 +57,7 @@ class DataManager:
         self.set_platform(request.server.platform)
         self.set_db(db)
         
-        with self._db.begin():
+        with self._db.begin(nested=True):
             # Compruebo si existe ese account en base de datos
             account_instance = self._get_or_create_account_model()
             
