@@ -129,7 +129,7 @@ def get_league_entry_by_queue_type(db: Session, account_id: int, queue_type: str
             models.LeagueEntry.queue_type == queue_type
         )
     )
-    return db.execute(stmt).scalar_one_or_none()
+    return db.scalar(stmt)
     
     
 
