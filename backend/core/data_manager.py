@@ -281,16 +281,18 @@ class DataManager:
         )
         
         if cs_instance is None:
+            wins = 1 if match.win else 0
             cs_instance = crud.create_champion_stats(
                 db=self._db,
                 account_id=match.account_id,
+                
                 champion_stats=schemas.ChampionStatsCreate(
                     name=match.champion_name,
                     kill_avg=match.kills,
                     death_avg=match.deaths,
-                    assists_avg=match.kills,
+                    assist_avg=match.kills,
                     kda=self._calculate_kda(match.kills, match.deaths, match.assists),
-                    winrate=self._calculate_winrate(match.wins, 1),
+                    winrate=self._calculate_winrate(wins, 1),
                     games_played=1,
                     wins= 1 if match.win else 0,
                     losses=1 if not match.win else 1,
@@ -310,8 +312,8 @@ class DataManager:
             new_kda = self._calculate_kda(
                 k_avg, d_avg, a_avg
             )
-            new_wins = cs_instance + 1 if match.win else None
-            new_losses = cs_instance + 1 if not match.win else None
+            new_wins = cs_instance.wins + 1 if match.win else cs_instance.wins
+            new_losses = cs_instance.losses + 1 if not match.win else cs_instance.losses
             new_wr = self._calculate_winrate(new_wins, new_losses)
             champion_stats_update = schemas.ChampionStatsUpdate(
                 games_played=cs_instance.games_played + 1,
