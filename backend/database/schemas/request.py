@@ -32,6 +32,7 @@ class RiotServer(BaseModel):
     @field_validator('name')
     @classmethod
     def validate_name(cls, v: str) -> str:
+        v = v.upper()
         if v not in server_mappings:
             raise ValueError(f"'{v}' is not a valid server name.")
         return v
