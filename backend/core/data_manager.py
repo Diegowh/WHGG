@@ -182,7 +182,7 @@ class DataManager:
             match_data = match_response.get("info")
             participants_data: list = match_data.get("participants")
             
-            participants =[]
+            participants = []
             for participant in participants_data:
                 if self._puuid == participant.get("puuid"):
                     player_data = participant
