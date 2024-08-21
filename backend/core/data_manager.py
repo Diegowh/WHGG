@@ -63,51 +63,34 @@ class DataManager:
         self.set_platform(request.server.platform)
         self.set_db(db)
         
-        # Compruebo si existe ese account en base de datos
-        account_instance = self._get_or_create_account_model()
-        
-        # Compruebo si he de actualizar o no los datos del account
-        # Si esta recien creado, y no tiene las entradas de League Entry, Match o ChampionStats
-        # el last_update sera None
-        now = int(time.time())
-        if (account_instance.last_update is not None and (now - account_instance.last_update) <= 3600):
-            return self._get_response(db_obj=account_instance)
-        
-        
-        self._create_or_update_league_entries (account_instance)
-        
-        matches_in_db: int = crud.count_matches(
-            db=self._db,
-            db_obj=account_instance
-        )
-        match_ids = self._get_match_ids(start_index=matches_in_db)
-        for match_id in match_ids:
-            match, participants = self._fetch_match_and_participants(match_id)
-            match = crud.create_match(
-                db=self._db,
-                match=match,
-                account_id=account_instance.id
-            )
+        with self._db.begin():
+            # Compruebo si existe ese account en base de datos
+            account_instance = self._get_or_create_account_model()
             
-            self._create_or_update_champion_stats(match)
+            # Compruebo si he de actualizar o no los datos del account
+            # Si esta recien creado, y no tiene las entradas de League Entry, Match o ChampionStats
+            # el last_update sera None
+            now = int(time.time())
+            if (account_instance.last_update is not None and (now - account_instance.last_update) <= 3600):
+                return self._get_response(db_obj=account_instance)
             
-            for participant in participants:
-                crud.create_participant(
-                    db=self._db,
-                    participant=participant,
-                    match_id=match.id
+            
+            self._create_or_update_league_entries (account_instance)
+            
+            # En base a los datos de cada match, crea las entradas para Match, Participant
+            # Y crea o actualiza los ChampionStats
+            self._create_matches(account_instance)
+            
+            # Una vez termina de crear todas las entradas a las tablas relacionadas con Account
+            # es cuando se asigna el last_update
+            now = int(time.time())
+            account_instance = crud.update_account_last_update(
+                db=self._db, 
+                db_obj=account_instance,
+                last_update=now
                 )
-        
-        # Una vez termina de crear todas las entradas a las tablas relacionadas con Account
-        # es cuando se asigna el last_update
-        now = int(time.time())
-        account_instance = crud.update_account_last_update(
-            db=self._db, 
-            db_obj=account_instance,
-            last_update=now
-            )
 
-        return self._get_response(db_obj=account_instance)
+            return self._get_response(db_obj=account_instance)
         
     def _get_response(self, db_obj: models.Account) -> schemas.Response:
         response = crud.get_response(db=self._db, db_obj=db_obj)
@@ -368,12 +351,12 @@ class DataManager:
         return account_model
 
 
-    def _create_or_update_league_entries(self, account_instance: models.Account):
+    def _create_or_update_league_entries(self, db_obj: models.Account):
         league_entries = self._fetch_league_entries()
         for league_entry in league_entries:
             existing_entry = crud.get_league_entry_by_queue_type(
                 db=self._db,
-                account_id=account_instance.id,
+                account_id=db_obj.id,
                 queue_type=league_entry.queue_type
             )
             
@@ -396,12 +379,35 @@ class DataManager:
                     crud.create_league_entry(
                         db=self._db,
                         league_entry=league_entry,
-                        account_id=account_instance.id
+                        account_id=db_obj.id
                     )
                 except IntegrityError:
                     self._db.rollback()
                     print("Error inesperado al crear la entrada LeagueEntry")
+    
+    def _create_matches(self, db_obj: models.Account):
+        matches_in_db: int = crud.count_matches(
+            db=self._db,
+            db_obj=db_obj
+        )
+        match_ids = self._get_match_ids(start_index=matches_in_db)
+        for match_id in match_ids:
+            match, participants = self._fetch_match_and_participants(match_id)
+            match = crud.create_match(
+                db=self._db,
+                match=match,
+                account_id=db_obj.id
+            )
             
+            self._create_or_update_champion_stats(match)
+            
+            for participant in participants:
+                crud.create_participant(
+                    db=self._db,
+                    participant=participant,
+                    match_id=match.id
+                )
+    
     def _calculate_kda(self, k: float, d: float, a: float) -> float:
         if d == 0:
             d = 1  # Para evitar division por 0
