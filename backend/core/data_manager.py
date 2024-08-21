@@ -273,13 +273,30 @@ class DataManager:
         
         
     def _create_or_update_champion_stats(self, match: models.Match):
-        try:
-            cs_instance = crud.get_champion_stats(
-                self._db,
+
+        cs_instance = crud.get_champion_stats(
+            self._db,
+            account_id=match.account_id,
+            name=match.champion_name
+        )
+        
+        if cs_instance is None:
+            cs_instance = crud.create_champion_stats(
+                db=self._db,
                 account_id=match.account_id,
-                name=match.champion_name
+                champion_stats=schemas.ChampionStatsCreate(
+                    name=match.champion_name,
+                    kill_avg=match.kills,
+                    death_avg=match.deaths,
+                    assists_avg=match.kills,
+                    kda=self._calculate_kda(match.kills, match.deaths, match.assists),
+                    winrate=self._calculate_winrate(match.wins, 1),
+                    games_played=1,
+                    wins= 1 if match.win else 0,
+                    losses=1 if not match.win else 1,
+                )
             )
-            
+        else:
             games_played = cs_instance.games_played + 1
             k_avg = self._calculate_avg(
                 match.kills, cs_instance.kill_avg, games_played
@@ -312,25 +329,7 @@ class DataManager:
                 id=cs_instance.id,
                 champion_stats=champion_stats_update
             )
-            
-        except NoResultFound:
-            # Creo la primera entrada ChampionStats
-            # para ese Account.id y champion_name
-            new_cs_instance = crud.create_champion_stats(
-                db=self._db,
-                account_id=match.account_id,
-                champion_stats=schemas.ChampionStatsCreate(
-                    name=match.champion_name,
-                    kill_avg=match.kills,
-                    death_avg=match.deaths,
-                    assists_avg=match.kills,
-                    kda=self._calculate_kda(match.kills, match.deaths, match.assists),
-                    winrate=self._calculate_winrate(match.wins, 1),
-                    games_played=1,
-                    wins= 1 if match.win else 0,
-                    losses=1 if not match.win else 1,
-                )
-            )
+
 
     def _get_or_create_account_model(self) -> models.Account:
         account_model = crud.get_account_by_game_name_and_tag_line(
