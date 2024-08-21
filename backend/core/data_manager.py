@@ -219,6 +219,7 @@ class DataManager:
                 item_6=player_data.get("item6"),
                 kills=player_data.get("kills"),
                 lane=player_data.get("lane"),
+                puuid=self._puuid,
                 perk_0=perk0,
                 perk_1=perk1,
                 riot_id_game_name=player_data.get("riotIdGameName"),
