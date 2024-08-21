@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from backend.api.v1.schemas import ResponseDto, Request, RiotIdDto, RiotServerDto
+import backend.database.schemas as schemas
 from backend.core.data_manager import DataManager
 from backend.database.database import get_db
 
 router = APIRouter()
 
-@router.get("/lol/profile/{server}/{game_name}-{tag_line}/", response_model=ResponseDto)
+@router.get("/lol/profile/{server}/{game_name}-{tag_line}/", response_model=schemas.Response)
 def get_account(
     server: str, 
     game_name: str, 
@@ -17,12 +17,12 @@ def get_account(
 ):
     return data_manager.get(
         db=db,
-        request=Request(
-            riot_id=RiotIdDto(
+        request=schemas.Request(
+            riot_id=schemas.RiotId(
                 game_name=game_name,
                 tag_line=tag_line
             ),
-            server=RiotServerDto(
+            server=schemas.RiotServer(
                 name=server
             )
         )

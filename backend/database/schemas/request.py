@@ -23,7 +23,7 @@ server_mappings: dict[str, tuple[str, str]] = {
     "TH": ("sea", "th2"),
 }
 
-class RiotServerDto(BaseModel):
+class RiotServer(BaseModel):
     name: str
     platform: Optional[str] = None
     region: Optional[str] = None
@@ -46,7 +46,7 @@ class RiotServerDto(BaseModel):
         return self
 
 
-class RiotIdDto(BaseModel):
+class RiotId(BaseModel):
     game_name: str
     tag_line: str
 
@@ -73,5 +73,5 @@ class RiotIdDto(BaseModel):
 
 
 class Request(BaseModel):
-    riot_id: RiotIdDto
-    server: RiotServerDto
+    riot_id: RiotId
+    server: RiotServer
