@@ -15,7 +15,7 @@ def create_account(db: Session, account: schemas.AccountCreate) -> models.Accoun
     # Y se lo paso a los **kwargs de models.Account
     db_account = models.Account(**account.model_dump())
     db.add(db_account)
-    db.commit()
+    db.flush()
     db.refresh(db_account)
     return db_account
 
@@ -23,7 +23,7 @@ def create_account(db: Session, account: schemas.AccountCreate) -> models.Accoun
 def create_champion_stats(db: Session, champion_stats: schemas.ChampionStatsCreate, account_id: int) -> models.ChampionStats:
     db_champion_stats = models.ChampionStats(**champion_stats.model_dump(), account_id=account_id)
     db.add(db_champion_stats)
-    db.commit()
+    db.flush()
     db.refresh(db_champion_stats)
     return db_champion_stats
 
@@ -31,7 +31,7 @@ def create_champion_stats(db: Session, champion_stats: schemas.ChampionStatsCrea
 def create_league_entry(db: Session, league_entry: schemas.LeagueEntryCreate, account_id: int) -> models.LeagueEntry:
     db_league_entry = models.LeagueEntry(**league_entry.model_dump(), account_id=account_id)
     db.add(db_league_entry)
-    db.commit()
+    db.flush()
     db.refresh(db_league_entry)
     return db_league_entry
 
@@ -39,7 +39,7 @@ def create_league_entry(db: Session, league_entry: schemas.LeagueEntryCreate, ac
 def create_match(db: Session, account: models.Account, match: schemas.MatchCreate) -> models.Match:
     db_match = models.Match(**match.model_dump(), account_id=account.id)
     db.add(db_match)
-    db.commit()
+    db.flush()
     db.refresh(db_match)
     return db_match
 
@@ -47,7 +47,7 @@ def create_match(db: Session, account: models.Account, match: schemas.MatchCreat
 def create_participant(db: Session, match: models.Match, participant: schemas.ParticipantCreate) -> models.Participant:
     db_participant = models.Participant(**participant.model_dump(), match_id=match.id)
     db.add(db_participant)
-    db.commit()
+    db.flush()
     db.refresh(db_participant)
     return db_participant
 
@@ -59,7 +59,7 @@ def get_account(db: Session, account_id: int) -> models.Account:
 
 def get_accounts(db: Session, skip: int = 0, limit: int = 100):
     stmt = select(models.Account).offset(skip).limit(limit)
-    return db.execute(statement=stmt).scalars().all()
+    return db.execute(stmt).scalars().all()
 
 
 def get_account_by_puuid(db: Session, puuid: str) -> models.Account:
@@ -70,11 +70,6 @@ def get_account_by_puuid(db: Session, puuid: str) -> models.Account:
 def get_account_by_game_name_and_tag_line(db: Session, game_name: str, tag_line: str) -> models.Account:
     stmt = (
         select(models.Account)
-        # .options(
-        #     joinedload(models.Account.league_entries),
-        #     joinedload(models.Account.matches),
-        #     joinedload(models.Account.champion_stats)
-        # )
         .where(
             models.Account.game_name == game_name,
             models.Account.tag_line == tag_line
@@ -127,26 +122,28 @@ def count_matches(db: Session, db_obj: models.Account) -> int:
 
 
 def get_league_entry_by_queue_type(db: Session, account_id: int, queue_type: str) -> models.LeagueEntry:
-    return (
-        db.query(models.LeagueEntry)
-        .filter(
+    stmt = (
+        select(models.LeagueEntry)
+        .where(
             models.LeagueEntry.account_id == account_id,
             models.LeagueEntry.queue_type == queue_type
         )
-        .first()
     )
+    return db.execute(stmt).scalar_one_or_none()
+    
     
 
 # ----- UPDATE ----- #
 def update_account(db: Session, account: schemas.AccountUpdate) -> models.Account:
-    db_account = db.query(models.Account).filter(models.Account.puuid == account.puuid).first()
+    stmt = select(models.Account).where(models.Account.puuid == account.puuid)
+    db_account = db.execute(stmt).scalar_one_or_none()
     if not db_account:
         raise HTTPException(status_code=404, detail="Account not found")
     
     for key, value in account.model_dump(exclude_unset=True).items():
         setattr(db_account, key, value)
 
-    db.commit()
+    db.flush()
     db.refresh(db_account)
     return db_account
 
@@ -166,43 +163,41 @@ def update_league_entry(db: Session, db_obj: models.LeagueEntry, obj_in: schemas
     for key, value in obj_in.model_dump(exclude_unset=True).items():
         setattr(db_league_entry, key, value)
         
-    db.commit()
+    db.flush()
     db.refresh(db_league_entry)
     return db_league_entry
 
 
 def update_champion_stats(db: Session, id: int, champion_stats: schemas.ChampionStatsUpdate) -> models.ChampionStats:
-    db_champion_stats = (
-        db.query(models.ChampionStats)
-        .filter(
-            models.ChampionStats.id == id
-        )
-        .first()
-    )
+    stmt = select(models.ChampionStats).where(models.ChampionStats.id == id)
+    db_champion_stats = db.execute(stmt).scalar_one_or_none()
     if not db_champion_stats:
         raise HTTPException(status_code=404, detail="ChampionStats not found")
     
     for key, value in champion_stats.model_dump(exclude_unset=True).items():
         setattr(db_champion_stats, key, value)
         
-    db.commit()
+    db.flush()
     db.refresh(db_champion_stats)
     return db_champion_stats
 
     
 def get_or_create_champion_stats(db: Session, account_id: int, champion_stats: schemas.ChampionStatsUpdate) -> models.ChampionStats:
+    stmt = (
+        select(models.ChampionStats)
+        .where(
+            models.ChampionStats.account_id == account_id,
+            models.ChampionStats.name == champion_stats.name
+        )
+    )
     
     try:
-        champion_stats_entry = (
-            db.query(models.ChampionStats)
-            .filter_by(account_id=account_id, name=champion_stats.name)
-            .one()
-        )
+        champion_stats_entry = db.execute(stmt).scalar_one()
         
         for key, value in champion_stats.model_dump(exclude_unset=True).items():
             setattr(champion_stats_entry, key, value)
         
-        db.commit()
+        db.flush()
         db.refresh(champion_stats_entry)
         return champion_stats_entry
 
@@ -212,7 +207,7 @@ def get_or_create_champion_stats(db: Session, account_id: int, champion_stats: s
             **champion_stats.model_dump()
         )
         db.add(new_champion_stats)
-        db.commit()
+        db.flush()
         db.refresh(new_champion_stats)
         return new_champion_stats
 
@@ -220,15 +215,16 @@ def get_champion_stats(db: Session, account_id: int, name: str) -> models.Champi
     stmt = (
         select(models.ChampionStats)
         .where(
-            models.ChampionStats.account_id==account_id,
-            models.ChampionStats.name==name
+            models.ChampionStats.account_id == account_id,
+            models.ChampionStats.name == name
         )
     )
     return db.execute(stmt).scalars().one_or_none()
     
 
 def _get_or_create(db: Session, model, **kwargs):
-    instance = db.query(model).filter_by(**kwargs).one_or_none()
+    stmt = select(model).filter_by(**kwargs)
+    instance = db.execute(stmt).scalar_one_or_none()
     if instance:
         return instance, False
     
@@ -237,5 +233,3 @@ def _get_or_create(db: Session, model, **kwargs):
         db.add(instance)
         db.flush()
         return instance, True
-        
-    
