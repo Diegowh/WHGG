@@ -1,12 +1,12 @@
 from typing import Optional
-from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
-if TYPE_CHECKING:
-    from backend.database.schemas.champion_stats import ChampionStats
-    from backend.database.schemas.league_entry import LeagueEntry
-    from backend.database.schemas.match import Match
+from backend.database.schemas.champion_stats import ChampionStats
+from backend.database.schemas.league_entry import LeagueEntry
+from backend.database.schemas.match import Match
+
+
 
 class AccountBase(BaseModel):
     puuid: str
@@ -35,12 +35,12 @@ class AccountUpdate(BaseModel):
 
 class Account(AccountBase):
     id: int
-    league_entries: list["LeagueEntry"] = []
-    matches: list["Match"] = []
-    champion_stats: list["ChampionStats"] = []
+    league_entries: Optional[list["LeagueEntry"]] = None
+    matches: Optional[list["Match"]] = None
+    champion_stats: Optional[list["ChampionStats"]] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Response(Account):
