@@ -4,8 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "WHGG"
-
+    
     # RiotGames API
     RIOT_API_KEY: str
 
