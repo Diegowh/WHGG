@@ -4,32 +4,26 @@ El propósito principal del DataManager es centralizar la lógica de negocio rel
 """
 
 import time
-from typing import TYPE_CHECKING
 
-from sqlalchemy import true
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound, IntegrityError
-from backend.database.models import account
 import backend.database.schemas as schemas
 from backend.core.riot_querier import RiotQuerier
 from backend.database import crud, models
 from backend.database.schemas.match import MatchCreate
 
-if TYPE_CHECKING:
-    from backend.config import Settings
 
 
 
 class DataManager:
-    def __init__(self, settings: 'Settings') -> None:
-        self.querier = RiotQuerier(settings)
+    def __init__(self) -> None:
+        self.querier = RiotQuerier()
         self._game_name = None
         self._tag_line = None
         self._region = None
         self._platform = None
         self._summoner_id: str = None
         self._puuid: str = None
-        self._settings = settings
         self._db = None
         self._season_start: int = None
 

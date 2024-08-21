@@ -15,17 +15,16 @@ Hace peticiones a los siguientes endpoints:
     - https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/
 '''
 
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 import httpx
 
-if TYPE_CHECKING:
-    from backend.config import Settings
+from backend.config import settings
 
 
 class RiotQuerier:
     
-    def __init__(self, settings: 'Settings') -> None:
+    def __init__(self) -> None:
         
         self._base_url = "https://{server}.api.riotgames.com"
 
