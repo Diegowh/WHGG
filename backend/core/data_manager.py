@@ -370,15 +370,11 @@ class DataManager:
                 )
             
             else:
-                try:
-                    crud.create_league_entry(
+                league_entry_instance = crud.create_league_entry(
                         db=self._db,
                         league_entry=league_entry,
                         account_id=db_obj.id
                     )
-                except IntegrityError:
-                    self._db.rollback()
-                    print("Error inesperado al crear la entrada LeagueEntry")
     
     def _create_matches(self, db_obj: models.Account):
         matches_in_db: int = crud.count_matches(
