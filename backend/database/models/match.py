@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database.database import Base
@@ -22,11 +22,11 @@ class Match(Base):
     participants: Mapped[list["Participant"]] = relationship(back_populates="match", cascade="all, delete-orphan")
 
     match_id: Mapped[str]
-    game_creation: Mapped[int]
+    game_creation: Mapped[BigInteger] = mapped_column(BigInteger)
     game_duration: Mapped[int]
-    game_end_timestamp: Mapped[int]
+    game_end_timestamp: Mapped[BigInteger] = mapped_column(BigInteger)
     game_mode: Mapped[str]
-    game_start_timestamp: Mapped[int]
+    game_start_timestamp: Mapped[BigInteger] = mapped_column(BigInteger)
     game_type: Mapped[str]
     game_version: Mapped[str]
     queue_id: Mapped[int]
