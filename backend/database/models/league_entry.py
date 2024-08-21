@@ -26,7 +26,7 @@ class LeagueEntry(Base):
     losses: Mapped[int]
     
     __table_args__ = (
-        UniqueConstraint("account_id", "queue_type", name="_account_id_queue_type_uc")
+        UniqueConstraint("account_id", "queue_type", name="_account_id_queue_type_uc"),
     )
     
     def __repr__(self) -> str:

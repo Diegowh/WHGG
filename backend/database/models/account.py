@@ -30,7 +30,7 @@ class Account(Base):
     last_update: Mapped[Optional[int]]
 
     __table_args__ = (
-        UniqueConstraint("game_name", "tag_line", name="_game_name_tag_line_uc")
+        UniqueConstraint("game_name", "tag_line", name="_game_name_tag_line_uc"),
     )
     
     def __repr__(self) -> str:
