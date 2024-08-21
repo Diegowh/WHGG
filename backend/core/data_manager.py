@@ -188,6 +188,7 @@ class DataManager:
                     player_data = participant
                 
                 participants.append(self._create_participant(participant))
+                
             perk0 = player_data["perks"]["styles"][0]["selections"][0]["perk"]
             perk1 = player_data["perks"]["styles"][1]["style"]
             
@@ -264,7 +265,7 @@ class DataManager:
             champion_id=participant_data.get("championId"),
             champion_name=participant_data.get("championName"),
             riot_id_game_name=participant_data.get("riotIdGameName"),
-            riot_id_tagline=participant_data.get("riotIdTagLine"),
+            riot_id_tagline=participant_data.get("riotIdTagline"),
             team_id=participant_data.get("teamId"),
             team_position=participant_data.get("teamPosition")
         )
