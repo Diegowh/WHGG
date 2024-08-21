@@ -388,7 +388,7 @@ class DataManager:
             match = crud.create_match(
                 db=self._db,
                 match=match,
-                account_id=db_obj.id
+                account=db_obj
             )
             
             self._create_or_update_champion_stats(match)
@@ -397,7 +397,7 @@ class DataManager:
                 crud.create_participant(
                     db=self._db,
                     participant=participant,
-                    match_id=match.id
+                    match=match
                 )
     
     def _calculate_kda(self, k: float, d: float, a: float) -> float:
