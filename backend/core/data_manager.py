@@ -88,7 +88,9 @@ class DataManager:
         
     def _get_response(self, db_obj: models.Account) -> schemas.Response:
         response = crud.get_response(db=self._db, db_obj=db_obj)
-        return schemas.Response.model_validate(response)
+        response = schemas.Response.model_validate(response)
+        self._db.commit()
+        return response
     
     
     def _fetch_account(self) -> schemas.AccountCreate:
