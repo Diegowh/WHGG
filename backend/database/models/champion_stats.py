@@ -14,7 +14,7 @@ class ChampionStats(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))
+    account_id: Mapped[int] = mapped_column(ForeignKey("account.id", ondelete="CASCADE"))
     account: Mapped["Account"] = relationship(back_populates="champion_stats")
 
     name: Mapped[str]
