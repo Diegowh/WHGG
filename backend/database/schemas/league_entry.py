@@ -24,7 +24,7 @@ class LeagueEntryUpdate(BaseModel):
 
 class LeagueEntry(LeagueEntryBase):
     id: int
-    account_id: str
+    account_id: int
 
     class Config:
         from_attributes = True
