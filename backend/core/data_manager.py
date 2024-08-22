@@ -222,8 +222,8 @@ class DataManager:
                 puuid=self._puuid,
                 perk_0=perk0,
                 perk_1=perk1,
-                riot_id_game_name=player_data.get("riotIdGameName"),
-                riot_id_tag_line=player_data.get("riotIdTagline"),
+                riot_id_game_name=player_data.get("riotIdGameName", ""),
+                riot_id_tag_line=player_data.get("riotIdTagline", ""),
                 summoner_1_id=player_data.get("summoner1Id"),
                 summoner_2_id=player_data.get("summoner2Id"),
                 summoner_id=player_data.get("summonerId"),
@@ -265,8 +265,8 @@ class DataManager:
         return schemas.ParticipantCreate(
             champion_id=participant_data.get("championId"),
             champion_name=participant_data.get("championName"),
-            riot_id_game_name=participant_data.get("riotIdGameName"),
-            riot_id_tagline=participant_data.get("riotIdTagline"),
+            riot_id_game_name=participant_data.get("riotIdGameName", ""),
+            riot_id_tagline=participant_data.get("riotIdTagline", ""),
             team_id=participant_data.get("teamId"),
             team_position=participant_data.get("teamPosition")
         )
