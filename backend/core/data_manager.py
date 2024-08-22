@@ -25,7 +25,7 @@ class DataManager:
         self._summoner_id: str = None
         self._puuid: str = None
         self._db = None
-        self._season_start: int = None
+        self._season_start: int = settings.season_start_timestamp
 
 
     def set_game_name(self, game_name) -> None:
