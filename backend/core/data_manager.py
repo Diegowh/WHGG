@@ -6,12 +6,11 @@ El propósito principal del DataManager es centralizar la lógica de negocio rel
 import time
 
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoResultFound, IntegrityError
 import backend.database.schemas as schemas
 from backend.core.riot_querier import RiotQuerier
 from backend.database import crud, models
 from backend.database.schemas.match import MatchCreate
-
+from backend.config import settings
 
 
 
@@ -66,9 +65,13 @@ class DataManager:
             # el last_update sera None
             now = int(time.time())
             if (account_instance.last_update is not None and (now - account_instance.last_update) <= 3600):
+                print("No ha pasado mas de una hora desde la ultima solicitud")
+                print("No es necesario actualizar los datos")
                 return self._get_response(db_obj=account_instance)
             
             
+            print("Ha pasado mas de una hora desde la ultima solicitud")
+            print("Actualizando los datos...")
             self._create_or_update_league_entries (account_instance)
             
             # En base a los datos de cada match, crea las entradas para Match, Participant
@@ -83,8 +86,9 @@ class DataManager:
                 db_obj=account_instance,
                 last_update=now
                 )
-
+            print("Datos actualizados!")
             return self._get_response(db_obj=account_instance)
+
         
     def _get_response(self, db_obj: models.Account) -> schemas.Response:
         response = crud.get_response(db=self._db, db_obj=db_obj)
