@@ -14,7 +14,7 @@ class Participant(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    match_id: Mapped[int] = mapped_column(ForeignKey("match.id"))
+    match_id: Mapped[int] = mapped_column(ForeignKey("match.id", ondelete="CASCADE"))
     match: Mapped["Match"] = relationship(back_populates="participants")
 
 

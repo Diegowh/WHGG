@@ -16,7 +16,7 @@ class Match(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    account_id: Mapped[int] = mapped_column(ForeignKey("account.id"))
+    account_id: Mapped[int] = mapped_column(ForeignKey("account.id", ondelete="CASCADE"))
     account: Mapped["Account"] = relationship(back_populates="matches")
     
     participants: Mapped[list["Participant"]] = relationship(back_populates="match", cascade="all, delete-orphan")
@@ -66,5 +66,4 @@ class Match(Base):
 
     
     def __repr__(self) -> str:
-        return (f"Match(id={self.id!r}, account_id={self.account_id!r}, "
-                f"info_id={self.info_id!r})")
+        return (f"Match(id={self.id!r}")
