@@ -1,10 +1,8 @@
 
-from sqlite3 import IntegrityError
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import ClauseElement, func, select
+from sqlalchemy import func, select
 import backend.database.models as models
-from backend.database.models.champion_stats import ChampionStats
 import backend.database.schemas as schemas
 from sqlalchemy.exc import NoResultFound
 

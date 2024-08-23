@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
-from sqlalchemy import Integer, String, UniqueConstraint
+from sqlalchemy import String, UniqueConstraint
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from backend.database.database import Base
