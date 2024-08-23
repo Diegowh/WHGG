@@ -1,13 +1,12 @@
 
 from functools import wraps
 import time
-from typing import Union
 import httpx
 import datetime as dt
 
 class RateLimitedClient(httpx.Client):
     
-    def __init__(self, interval: Union[dt.timedelta, float], count: int = 1, **kwargs):
+    def __init__(self, interval: dt.timedelta | float, count: int = 1, **kwargs):
         
         if isinstance(interval, dt.timedelta):
             interval = interval.total_seconds()

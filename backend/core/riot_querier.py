@@ -16,7 +16,6 @@ Hace peticiones a los siguientes endpoints:
 '''
 
 import time
-from typing import Optional
 
 import httpx
 
@@ -42,7 +41,7 @@ class RiotQuerier:
         self._client = RateLimitedClient(interval=1.2, headers={"X-Riot-Token": settings.RIOT_API_KEY})
 
 
-    def _fetch(self, url: str, method: str = 'GET', params: Optional[dict] = None, data: Optional[dict] = None, retry: bool = True):
+    def _fetch(self, url: str, method: str = 'GET', params: dict | None = None, data: dict | None = None, retry: bool = True):
         try:
             if method == 'GET':
                 response = self._client.get(url, params=params)
