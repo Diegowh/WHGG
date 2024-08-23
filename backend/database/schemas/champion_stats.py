@@ -32,5 +32,6 @@ class ChampionStats(ChampionStatsBase):
     id: int
     account_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }

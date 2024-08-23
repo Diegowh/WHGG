@@ -39,8 +39,9 @@ class Account(AccountBase):
     matches: Optional[list["Match"]] = None
     champion_stats: Optional[list["ChampionStats"]] = None
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
 
 class Response(Account):
