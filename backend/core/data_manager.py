@@ -65,13 +65,9 @@ class DataManager:
             # el last_update sera None
             now = int(time.time())
             if (account_instance.last_update is not None and (now - account_instance.last_update) <= 3600):
-                print("No ha pasado mas de una hora desde la ultima solicitud")
-                print("No es necesario actualizar los datos")
                 return self._get_response(db_obj=account_instance)
             
-            
-            print("Ha pasado mas de una hora desde la ultima solicitud")
-            print("Actualizando los datos...")
+    
             self._create_or_update_league_entries (account_instance)
             
             # En base a los datos de cada match, crea las entradas para Match, Participant
@@ -86,7 +82,6 @@ class DataManager:
                 db_obj=account_instance,
                 last_update=now
                 )
-            print("Datos actualizados!")
             return self._get_response(db_obj=account_instance)
 
         
@@ -134,7 +129,6 @@ class DataManager:
                 summoner_id=self._summoner_id,
                 platform=self._platform
             )
-            
             for entry in league_entries_response:
                 league_entry = schemas.LeagueEntryCreate(
                     queue_type=entry.get("queueType"),
