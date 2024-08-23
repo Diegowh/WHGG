@@ -345,6 +345,8 @@ class DataManager:
             self.set_puuid(new_account_data.puuid)
             account_model = crud.create_account(db=self._db, account=new_account_data) 
         
+        self.set_summoner_id(account_model.summoner_id)
+        self.set_puuid(account_model.puuid)
         return account_model
 
 
