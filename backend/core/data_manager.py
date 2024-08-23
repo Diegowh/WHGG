@@ -407,15 +407,22 @@ class DataManager:
                     match=match
                 )
     
-    def _calculate_kda(self, k: float, d: float, a: float) -> float:
+    @staticmethod
+    def _calculate_kda(k: float, d: float, a: float) -> float:
         if d == 0:
             d = 1  # Para evitar division por 0
         return round(((k + a) / d), 2)
     
-    def _calculate_winrate(self, wins: int, games: int) -> int:
+    @staticmethod
+    def _calculate_winrate(wins: int, games: int) -> int:
         return int((wins / games) * 100)
     
-    def _calculate_avg(self, unit: int, prev_avg: int, games_played: int) -> float:
-        prev_unit = prev_avg * (games_played - 1)
-        total_unit = prev_unit + unit
-        return round((total_unit / games_played), 2)
+    @staticmethod
+    def _calculate_avg(new_value: int, prev_avg: int, games_played: int) -> float:
+        if games_played == 1:
+            return round(float(new_value), 2)
+        
+        prev_total = prev_avg * (games_played - 1)
+        total = prev_total + new_value
+        new_avg = total / games_played
+        return round(new_avg, 2)
