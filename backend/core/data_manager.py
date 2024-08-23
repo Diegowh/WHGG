@@ -320,7 +320,7 @@ class DataManager:
             )
             new_wins = cs_instance.wins + 1 if match.win else cs_instance.wins
             new_losses = cs_instance.losses + 1 if not match.win else cs_instance.losses
-            new_wr = self._calculate_winrate(new_wins, new_losses)
+            new_wr = self._calculate_winrate(new_wins, games_played)
             champion_stats_update = schemas.ChampionStatsUpdate(
                 games_played=cs_instance.games_played + 1,
                 kill_avg=k_avg,
