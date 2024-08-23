@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, clear_mappers
-from backend.models.base import Base
+from backend.database.database import Base
 
 
 # scope='module' para crear el motor de la base de datos
