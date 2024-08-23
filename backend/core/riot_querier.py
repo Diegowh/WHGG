@@ -15,16 +15,13 @@ Hace peticiones a los siguientes endpoints:
     - https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/
 '''
 
-from collections import deque
-import threading
 import time
 from typing import Optional
 
 import httpx
-from sqlalchemy import true
 
 from backend.config import settings
-from backend.core.rate_limiter import RateLimiter
+from backend.core.rate_limiter import RateLimitedClient
 
 
 class RiotQuerier:
@@ -42,40 +39,9 @@ class RiotQuerier:
         self._summoner_endpoint = "/lol/summoner/v4/summoners/by-puuid/{puuid}"  
         self._league_entry_endpoint = "/lol/league/v4/entries/by-summoner/{summoner_id}"  
 
-        self._client = httpx.Client(headers={"X-Riot-Token": settings.RIOT_API_KEY})
+        self._client = RateLimitedClient(interval=1.2, headers={"X-Riot-Token": settings.RIOT_API_KEY})
 
-        # RateLimiters config
-        self._rl_burst = RateLimiter(20, 1)
-        self._rl_sustained = RateLimiter(100, 120)
-        self._queue = deque()
-        self._lock = threading.Lock()
-        self._worker_thread = threading.Thread(target=self._process_queue)
-        self._worker_thread.daemon = True
-        self._worker_thread.start()
-    
-    def _process_queue(self):
-        
-        while True:
-            with self._lock:
-                if self._queue:
-                    item = self._queue.popleft()
-                    url, method, params, data, result_event, result_container = item
-                    
-                    while not self._can_make_request():
-                        time.sleep(0.1)
-                
-                    result_container['result'] = self._fetch(url, method, params, data)
-                    result_event.set()
-                else:
-                    time.sleep(0.1)
-            
-            time.sleep(0.01)  # Evita que el bucle consuma demasiada CPU
-            
-                
-    def _can_make_request(self):
-        return self._rl_sustained.allow_request() and self._rl_burst.allow_request()
-    
-    
+
     def _fetch(self, url: str, method: str = 'GET', params: Optional[dict] = None, data: Optional[dict] = None, retry: bool = True):
         try:
             if method == 'GET':
@@ -103,18 +69,7 @@ class RiotQuerier:
             else:
                 print(f"HTTP Error occurred: {e.response.status_code} - {e.response.text}")
                 return None
-        
-    def fetch(self, url: str, method: str = 'GET', params: Optional[dict] = None, data: Optional[dict] = None):
-        
-        result_event = threading.Event()
-        result_container = {}  # Para almacenar el resultado
-        
-        with self._lock:
-            self._queue.append((url, method, params, data, result_event, result_container))
-        
-        result_event.wait()  # Espera a que la solicitud se procese y se obtenga el resultado
-        return result_container.get('result')  # Retorna si la solicitud se proceso corerctamente
-        
+             
     def get_account_by_riot_id(self, game_name: str, tag_line: str, region: str) -> dict:
         """Retorna el resultado de: https://developer.riotgames.com/apis#account-v1/GET_getByRiotId"""
         url = (self._base_url + self._account_endpoint).format(
@@ -122,7 +77,7 @@ class RiotQuerier:
             game_name=game_name,
             tag_line=tag_line
         )
-        return self.fetch(url)
+        return self._fetch(url)
 
     def get_summoner_by_puuid(self, puuid: str, platform: str) -> dict:
         """Retorna el resultado de: https://developer.riotgames.com/apis#summoner-v4/GET_getByPUUID"""
@@ -130,7 +85,7 @@ class RiotQuerier:
             server=platform,
             puuid=puuid
         )
-        return self.fetch(url)
+        return self._fetch(url)
     
     def get_matches_by_puuid(
             self, 
@@ -160,7 +115,7 @@ class RiotQuerier:
             puuid=puuid
         )
 
-        return self.fetch(url, params=params)
+        return self._fetch(url, params=params)
     
     def get_match_by_match_id(self, match_id: str, region: str) -> dict:
         """Retorna el resultado de: https://developer.riotgames.com/apis#match-v5/GET_getMatch"""
@@ -169,7 +124,7 @@ class RiotQuerier:
             server=region,
             match_id=match_id
         )
-        return self.fetch(url)
+        return self._fetch(url)
 
     def get_league_entries_by_summoner_id(self, summoner_id: str, platform: str) -> list[dict]:
         """Retorna el resultado de: https://developer.riotgames.com/apis#league-v4/GET_getLeagueEntriesForSummoner"""
@@ -178,4 +133,4 @@ class RiotQuerier:
             server=platform,
             summoner_id=summoner_id
         )
-        return self.fetch(url)
+        return self._fetch(url)
