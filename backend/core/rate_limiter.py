@@ -1,37 +1,47 @@
-from collections import deque
-import threading
+
+from functools import wraps
 import time
+from typing import Union
+import httpx
+import datetime as dt
 
-
-class RateLimiter:
-    def __init__(self, max_requests: int, per_time_unit: float):
-        self.token_bucket = TokenBucket(max_requests, max_requests / per_time_unit)
-        
-    def allow_request(self) -> bool:
-        return self.token_bucket.get_token()
+class RateLimitedClient(httpx.Client):
     
-
-class TokenBucket:
-    def __init__(self, max_tokens: int, refill_rate: float) -> None:
-        self.max_tokens = max_tokens
-        self.refill_rate = refill_rate
-        self.tokens = max_tokens
-        self.last_refill_time = time.time()
-        self.lock = threading.Lock()
+    def __init__(self, interval: Union[dt.timedelta, float], count: int = 1, **kwargs):
         
+        if isinstance(interval, dt.timedelta):
+            interval = interval.total_seconds()
+            
+        self.interval = interval
+        self.count = count
+        self.requests_made = 0
+        self.last_reset = time.time()
+        super().__init__(**kwargs)
     
-    def _refill(self) -> None:
+    def _reset_if_needed(self):
         current_time = time.time()
-        elapsed_time = current_time - self.last_refill_time
+        elapsed_time = current_time - self.last_reset
         
-        self.tokens = min(self.max_tokens, self.tokens + elapsed_time * self.refill_rate)
-        self.last_refill_time = current_time
-        
+        if elapsed_time > self.interval:
+            self.requests_made = 0 
+            self.last_reset = current_time
     
-    def get_token(self) -> bool:
-        with self.lock:
-            self._refill()
-            if self.tokens >= 1:
-                self.tokens -= 1
-                return True
-            return False
+    def _acquire(self):
+        while True:
+            self._reset_if_needed()
+            if self.requests_made < self.count:
+                self.requests_made += 1
+                break
+            
+            else:
+                time_to_wait = self.interval - (time.time() - self.last_reset)
+                if time_to_wait > 0:
+                    print(f"Rate limit reached. Waiting for {time_to_wait:.2f} seconds...")
+                    time.sleep(time_to_wait)
+                self._reset_if_needed()
+    
+    @wraps(httpx.Client.send)
+    def send(self, *args, **kwargs):
+        self._acquire()
+        return super().send(*args, **kwargs)
+    
