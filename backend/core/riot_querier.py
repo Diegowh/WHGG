@@ -20,7 +20,7 @@ import time
 import httpx
 
 from backend.config import settings
-from backend.core.rate_limiter import RateLimitedClient
+from backend.core.ratelimiter.rate_limiter import RateLimitedClient
 
 
 class RiotQuerier:
