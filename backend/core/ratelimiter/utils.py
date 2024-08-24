@@ -1,8 +1,13 @@
+'''
+Funciones para el rate limiter
+'''
+
 import time
 
 def now():
     """
-    Use monotonic time if available, otherwise fall back to the system clock.
+    Utiliza el tiempo monotónico `time.monotonic` si está disponible,
+    de lo contrario, utiliza el reloj del sistema.
     """
     if hasattr(time, 'monotonic'):
         return time.monotonic
