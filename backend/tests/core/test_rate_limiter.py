@@ -4,7 +4,7 @@ import httpx
 import datetime as dt
 from unittest.mock import patch
 
-from backend.core.rate_limiter import RateLimitedClient
+from backend.core.ratelimiter.rate_limiter import RateLimitedClient
 
 
 @patch('time.time')
