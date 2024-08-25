@@ -113,3 +113,32 @@ class Request(BaseModel):
     """
     riot_id: RiotId
     server: RiotServer
+
+
+class ResponseError(BaseModel):
+    """DTO para representar los datos de una respuesta de error 404.
+    """
+    request: Request
+
+    response: Optional[dict] = None
+
+    @model_validator(mode='after')
+    def set_response(self):
+        """Construye self.response en base a los datos de self.request"""
+        request = self.request
+        if request:
+            self.response = {
+                "status": {
+                    "status_code": 404,
+                    "message": f"Data not found - No results found for player with riot id {request.riot_id.game_name}#{request.riot_id.tag_line}"
+                }
+            }
+        return self
+
+    model_config = {
+        "json_encoders": {
+            Request: lambda v: None
+        },
+        "exclude": {"request"},
+        "orm_mode": True,
+    }
