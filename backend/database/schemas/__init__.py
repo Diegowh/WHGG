@@ -35,7 +35,6 @@ from backend.database.schemas.request import (
     Request,
     RiotId,
     RiotServer,
-    ResponseError
 )
 
 __all__ = [
@@ -44,6 +43,5 @@ __all__ = [
     "LeagueEntry", "LeagueEntryBase", "LeagueEntryCreate", "LeagueEntryUpdate",
     "Match", "MatchBase", "MatchCreate",
     "Participant", "ParticipantCreate", "ParticipantBase",
-    "Request", "RiotId", "RiotServer",
-    "ResponseError",
+    "Request", "RiotId", "RiotServer"
 ]

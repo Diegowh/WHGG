@@ -59,7 +59,7 @@ class DataManager:
         self,
         request: schemas.Request,
         db: Session
-    ) -> schemas.Response | schemas.ResponseError:
+    ) -> schemas.Response:
         """Obtiene los datos para una request.
         Maneja una solicitud para obtener los datos de una cuenta de
         League of Legends.
@@ -91,7 +91,7 @@ class DataManager:
                 # Compruebo si existe ese account en base de datos
                 account_instance = self._get_or_create_account_model()
             except DataNotFoundError:
-                return schemas.ResponseError(request=request)
+                raise DataNotFoundError
     
             # Compruebo si he de actualizar o no los datos del account
             # Si esta recien creado, y no tiene las entradas de League Entry, Match o ChampionStats
