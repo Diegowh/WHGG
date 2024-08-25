@@ -4,7 +4,6 @@ relacionadas con las solicitudes de perfil de usuario de League of Legends
 '''
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
@@ -60,10 +59,3 @@ def get_account(
             )
     else:
         return response
-
-
-FAVICON_PATH = 'favicon.ico'
-@router.get('/favicon.ico', include_in_schema=False)
-async def favicon():
-    """API favicon"""
-    return FileResponse(FAVICON_PATH)
