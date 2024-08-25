@@ -1,7 +1,13 @@
 from sqlalchemy.exc import IntegrityError
 import pytest
 
-from backend.database.models import *
+from backend.database.models import (
+    Account,
+    ChampionStats,
+    LeagueEntry,
+    Match,
+    Participant
+)
 
 
 def test_account_creation(session):
@@ -219,7 +225,7 @@ def test_match_creation(session):
     assert retrieved_match.total_minions_killed == 150
     assert retrieved_match.vision_score == 10
     assert retrieved_match.wards_placed == 5
-    assert retrieved_match.win == True
+    assert retrieved_match.win is True
 
     assert retrieved_match.account_id == retrieved_account.id
     assert retrieved_match.account == retrieved_account

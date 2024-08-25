@@ -2,8 +2,6 @@ from unittest.mock import MagicMock
 from httpx import patch
 import pytest
 from backend.core.data_manager import DataManager
-import backend.database.schemas as schemas
-from backend.database import models
 
 
 class TestDataManager:

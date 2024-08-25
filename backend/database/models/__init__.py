@@ -4,3 +4,8 @@ from backend.database.models.league_entry import LeagueEntry
 from backend.database.models.match import Match
 from backend.database.models.participant import Participant
 from backend.database.models.version import Version
+
+
+__all__ = [
+    "Account", "ChampionStats", "LeagueEntry", "Match", "Participant", "Version"
+]
