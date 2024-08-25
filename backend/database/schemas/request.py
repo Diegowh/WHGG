@@ -140,5 +140,5 @@ class ResponseError(BaseModel):
             Request: lambda v: None
         },
         "exclude": {"request"},
-        "orm_mode": True,
+        "from_attributes": True,
     }
