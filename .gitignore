@@ -213,3 +213,27 @@ coverage.xml
 /pysqlite_test_schema.db
 *.sqlite3
 migrations/env.py
+
+# Docker
+.vagrant*
+bin
+docker/docker
+.*.swp
+a.out
+*.orig
+build_src
+.flymake*
+.idea
+.DS_Store
+docs/_build
+docs/_static
+docs/_templates
+.gopath/
+.dotcloud
+*.test
+bundles/
+.hg/
+.git/
+vendor/pkg/
+pyenv
+Vagrantfile
