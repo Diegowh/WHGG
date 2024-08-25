@@ -21,6 +21,7 @@ import httpx
 
 from backend.config import settings
 from backend.core.ratelimiter.rate_limiter import RateLimitedClient
+from backend.core.exceptions import DataNotFoundError
 
 
 class RiotQuerier:
@@ -74,6 +75,9 @@ class RiotQuerier:
                 if retry:
                     return self._fetch(url, params, retry)  # Reintento
                 return None
+
+            if e.response.status_code == 404:
+                raise DataNotFoundError("Data not found") from e
 
             print(f"HTTP Error occurred: {e.response.status_code} - {e.response.text}")
             return None
