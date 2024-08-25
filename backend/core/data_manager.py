@@ -177,7 +177,7 @@ class DataManager:
             match_ids = self.querier.get_matches_by_puuid(
                 puuid=self._puuid,
                 region=self._server.region,
-                start_time=settings.season_start_timestamp,
+                start_time=settings.SEASON_START,
                 start=start,
                 count=count
             )

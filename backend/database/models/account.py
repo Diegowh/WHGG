@@ -15,7 +15,7 @@ from backend.database.models.league_entry import LeagueEntry
 from backend.database.models.match import Match
 
 
-class Account(Base):
+class Account(Base):  # pylint: disable=too-few-public-methods
     """Representa un modelo de Account en la base de datos.
 
     Esta clase extiende de `sqlalchemy.orm.DeclarativeBase`

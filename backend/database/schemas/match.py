@@ -1,3 +1,7 @@
+'''
+Este módulo contiene varias DTOs que extienden de `pydantic.BaseModel`, responsables de
+manejar los datos relacionados con `models.Match`.
+'''
 from pydantic import BaseModel
 
 from backend.database.schemas.participant import Participant
@@ -5,6 +9,8 @@ from backend.database.schemas.participant import Participant
 
 
 class MatchBase(BaseModel):
+    """Clase base para representar la información de una partida jugada por un usuario"""
+
     match_id: str
     game_creation: int
     game_duration: int
@@ -49,10 +55,18 @@ class MatchBase(BaseModel):
     win: bool
 
 class MatchCreate(MatchBase):
-    pass
+    """DTO para representar los datos necesarios para crear una nueva instancia de
+    `models.Match`
+    """
 
 
 class Match(MatchBase):
+    """DTO para representar una partida jugada por un usuario
+    
+    Se utiliza para transportar los datos obtenidos de una instancia de
+    `models.Match`
+    """
+
     id: int
     account_id: int
     participants: list["Participant"] = []

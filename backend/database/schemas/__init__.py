@@ -1,8 +1,13 @@
+'''
+Este módulo contiene los DTOs utilizados para transferir
+los datos entre la API de Riot Games y la base de datos del backend
+'''
 from backend.database.schemas.account import (
     Account,
     AccountBase,
     AccountCreate,
-    AccountUpdate
+    AccountUpdate,
+    Response
 )
 from backend.database.schemas.champion_stats import (
     ChampionStats,
@@ -33,7 +38,7 @@ from backend.database.schemas.request import (
 )
 
 __all__ = [
-    "Account", "AccountBase", "AccountCreate", "AccountUpdate",
+    "Account", "AccountBase", "AccountCreate", "AccountUpdate", "Response",
     "ChampionStats", "ChampionStatsBase", "ChampionStatsCreate", "ChampionStatsUpdate",
     "LeagueEntry", "LeagueEntryBase", "LeagueEntryCreate", "LeagueEntryUpdate",
     "Match", "MatchBase", "MatchCreate",

@@ -1,3 +1,7 @@
+'''
+Este módulo contiene los modelos SQLAlchemy que representan las tablas de 
+la base de datos.
+'''
 from backend.database.models.account import Account
 from backend.database.models.champion_stats import ChampionStats
 from backend.database.models.league_entry import LeagueEntry
