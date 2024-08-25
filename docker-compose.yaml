@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"  # Mapea el puerto 8000 del contenedor al puerto 8000 del host
+    env_file:
+      - .env  # Usa el archivo .env para las variables de entorno
+    volumes:
+      - ./backend:/app/backend  # Monta el directorio del backend en el contenedor
+    restart: unless-stopped  # Reinicia el contenedor a menos que se detenga manualmente
