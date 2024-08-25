@@ -1,0 +1,10 @@
+# Ignora el entorno virtual
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git/
+migrations/
+frontend/
+alembic.ini
