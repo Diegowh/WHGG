@@ -4,6 +4,7 @@ relacionadas con las solicitudes de perfil de usuario de League of Legends
 '''
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from backend.database import schemas
@@ -12,7 +13,7 @@ from backend.database.database import get_db
 
 router = APIRouter()
 
-@router.get("/lol/profile/{server}/{game_name}-{tag_line}/", response_model=schemas.Response)
+@router.get("/lol/profile/{server}/{game_name}-{tag_line}/", response_model=schemas.Response | schemas.ResponseError)
 def get_account(
     server: str,
     game_name: str,
@@ -44,3 +45,10 @@ def get_account(
             )
         )
     )
+
+
+FAVICON_PATH = 'favicon.ico'
+@router.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    """API favicon"""
+    return FileResponse(FAVICON_PATH)
