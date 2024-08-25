@@ -7,6 +7,7 @@ Este módulo centraliza la lógica de negocio para la obtención y persistencia 
 import time
 
 from sqlalchemy.orm import Session
+from backend.core.exceptions import DataNotFoundError
 from backend.database import schemas
 from backend.core.riot_querier import RiotQuerier
 from backend.database import crud, models
@@ -54,7 +55,11 @@ class DataManager:
         """Asigna un nuevo valor a self._puuid"""
         self._puuid = puuid
 
-    def get(self, request: schemas.Request, db: Session) -> schemas.Response:
+    def get(
+        self,
+        request: schemas.Request,
+        db: Session
+    ) -> schemas.Response | schemas.ResponseError:
         """Obtiene los datos para una request.
         Maneja una solicitud para obtener los datos de una cuenta de
         League of Legends.
@@ -82,9 +87,12 @@ class DataManager:
         self.set_db(db)
 
         with self._db.begin(nested=True):
-            # Compruebo si existe ese account en base de datos
-            account_instance = self._get_or_create_account_model()
-
+            try:
+                # Compruebo si existe ese account en base de datos
+                account_instance = self._get_or_create_account_model()
+            except DataNotFoundError:
+                return schemas.ResponseError(request=request)
+    
             # Compruebo si he de actualizar o no los datos del account
             # Si esta recien creado, y no tiene las entradas de League Entry, Match o ChampionStats
             # el last_update sera None
@@ -94,6 +102,7 @@ class DataManager:
                 return self._get_response(db_obj=account_instance)
 
             self._create_or_update_league_entries (account_instance)
+
 
             # En base a los datos de cada match, crea las entradas para Match, Participant
             # Y crea o actualiza los ChampionStats
@@ -122,6 +131,7 @@ class DataManager:
             tag_line=self._riot_id.tag_line,
             region=self._server.region
             )
+            
         if account_response is not None:
             puuid = account_response.get("puuid")
 
