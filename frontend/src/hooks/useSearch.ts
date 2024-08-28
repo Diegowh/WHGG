@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from "react";
+import { SearchResponse } from "../interfaces";
 
-const BASE_URL = "http://localhost:8000/lol/profile/";
+const BASE_URL = "https://whgg.onrender.com/lol/profile/";
 
 interface SearchParams {
   gameName: string;
   tagLine: string;
   server: string;
 }
-interface SearchResult {}
 
 export function useSearch() {
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<SearchResult | null>(null);
+  const [result, setResult] = useState<SearchResponse | null>(null);
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -32,7 +32,7 @@ export function useSearch() {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      const data: SearchResult = await response.json();
+      const data: SearchResponse = await response.json();
       setResult(data);
     } catch (e: any) {
       if (e.name === "AbortError") {
@@ -45,5 +45,12 @@ export function useSearch() {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (result !== null) {
+      console.log("Result: ", result);
+    }
+  }, [result]);
+
   return { handleSearch, error, isLoading, result };
 }
