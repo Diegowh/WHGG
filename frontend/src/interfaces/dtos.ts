@@ -19,6 +19,7 @@ export interface Participant {
   id: number;
   match_id: number;
 }
+
 export interface Match {
   match_id: string;
   game_creation: number;
@@ -79,7 +80,7 @@ export interface ChampionStats {
   accountId: number;
 }
 
-export interface Response {
+export interface SearchResponse {
   puuid: string;
   summonerId: string;
   accountId: string;
