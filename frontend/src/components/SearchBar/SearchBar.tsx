@@ -57,7 +57,6 @@ function SearchBar() {
   const onSearch = () => {
     const [gameName, tagLine] = query.split("#");
     handleSearch({ gameName, tagLine, server });
-    console.log("Result: ", result);
   };
 
   return (
