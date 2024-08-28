@@ -2,11 +2,7 @@ import { Box, Image } from "@chakra-ui/react";
 import SearchBar from "../components/SearchBar/SearchBar";
 import logo from "../assets/wh-logo.png";
 
-function Home({
-  onSearch,
-}: {
-  onSearch: (params: { query: string; server: string }) => void;
-}) {
+function Home() {
   return (
     <Box
       height="70vh"
@@ -16,7 +12,7 @@ function Home({
       justifyContent="center"
     >
       <Image src={logo} alt="Logo" mb={8} />
-      <SearchBar onSearch={onSearch} />
+      <SearchBar />
     </Box>
   );
 }
