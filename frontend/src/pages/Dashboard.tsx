@@ -42,12 +42,12 @@ function Dashboard() {
               right: "0%",
               bottom: "0%",
               left: "0%",
-              backgroundImage: `linear-gradient(to left, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)), url(${bgImage})`,
+              backgroundImage: `linear-gradient(to left, rgba(0, 0, 0, 0), rgba(7, 7, 32, 1)80%), url(${bgImage})`,
 
               backgroundPosition: "100% 25%",
               backgroundRepeat: "no-repeat",
-              backgroundSize: "100%",
-              opacity: 0.3,
+              backgroundSize: "90%",
+              opacity: 0.6,
               zIndex: -1,
             }}
           >
