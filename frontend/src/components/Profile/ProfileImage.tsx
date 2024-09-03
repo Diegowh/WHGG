@@ -10,7 +10,7 @@ function ProfileImage({ src, alt, level }: ProfileImageProps) {
   const borderColor = theme.colors.border;
 
   return (
-    <Box position="relative" display="inline-block" margin="15px">
+    <Box position="relative" display="inline-block" mr={"20px"}>
       <Image
         src={src}
         alt={alt}

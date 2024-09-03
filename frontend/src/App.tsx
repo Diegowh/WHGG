@@ -1,11 +1,11 @@
 import "./App.css";
-import Dashboard from "./pages/Dashboard";
-import Home from "./pages/Home";
+import { DashboardPage } from "./pages/DashboardPage";
+import { HomePage } from "./pages/HomePage";
 
 function App() {
   return (
-    // <Home/>
-    <Dashboard />
+    // <HomePage />
+    <DashboardPage />
   );
 }
 

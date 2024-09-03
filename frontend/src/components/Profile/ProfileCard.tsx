@@ -10,7 +10,7 @@ type ProfileCardProps = {
   bgImage?: string;
 };
 
-function ProfileCard({
+export function ProfileCard({
   level = 534,
   imageSrc = FiddlesticksIcon,
   imageAlt = "Fiddlesticks",
@@ -25,12 +25,15 @@ function ProfileCard({
   const terciaryColor = theme.colors.terciary;
   return (
     <Box
-      // bgColor={"tomato"}
+      bgColor={"background"}
       display={"flex"}
       position={"relative"}
       alignItems={"center"}
       justifyContent={"flex-start"}
-      p={4}
+      pt={4}
+      pb={4}
+      pr={4}
+      pl={2}
       _before={{
         content: '""',
         position: "absolute",
@@ -44,16 +47,10 @@ function ProfileCard({
         backgroundRepeat: "no-repeat",
         backgroundSize: "80%",
         opacity: 0.6,
-        zIndex: -1,
       }}
     >
       <ProfileImage src={imageSrc} alt={imageAlt} level={level} />
-      <Box
-        // bgColor={"tomato"}
-        display="flex"
-        flexDirection="column"
-        alignItems="start"
-      >
+      <Box display="flex" flexDirection="column" alignItems="start">
         <Text
           // as="b"
           // backgroundColor={"tomato"}
@@ -70,7 +67,7 @@ function ProfileCard({
           bgColor={terciaryColor}
           borderRadius={3}
           color={"white"}
-          width={150}
+          width={"130px"}
           _hover={{ bg: { terciaryColor } }}
         >
           Update
@@ -79,5 +76,3 @@ function ProfileCard({
     </Box>
   );
 }
-
-export default ProfileCard;

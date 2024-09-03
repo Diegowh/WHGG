@@ -8,9 +8,11 @@ function HeaderBar() {
       height="8vh"
       display="flex"
       flexDirection="row"
-      // alignItems="center"
+      top="0"
+      zIndex="1000"
+      position={"sticky"}
       justifyContent="center"
-      // backgroundColor={"red"}
+      backgroundColor={"background"}
       pr={"30px"}
       pt={"20px"}
     >
