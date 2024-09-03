@@ -25,7 +25,7 @@ function LeagueEntryCard({
       bgColor={"secondary"}
       w="100%"
       h="120px"
-      mb={2}
+      mb={3}
       direction={"column"}
       borderRadius={"3px"}
     >
@@ -40,13 +40,15 @@ function LeagueEntryCard({
         pl="15px"
         pr="10px"
       >
-        <Image src={emblemUrl} height={10} ml={5} mt={1} />
+        <Image src={emblemUrl} height={12} ml={3} mt={1} />
         {/* Rank container */}
         <Flex ml={3} direction={"column"}>
-          <Text fontSize="s" fontWeight={600}>
+          <Text fontSize="18px" fontWeight={600}>
             {rank}
           </Text>
-          <Text fontSize="xs">{leaguePoints} lp</Text>
+          <Text fontSize="14px" color={"#C1D0F2"}>
+            {leaguePoints} lp
+          </Text>
         </Flex>
         <Spacer />
         {/* Winrate container */}

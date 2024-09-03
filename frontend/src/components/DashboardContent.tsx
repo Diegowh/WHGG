@@ -1,7 +1,9 @@
 import { Box, Center, Flex, Text, Square } from "@chakra-ui/react";
 import LeagueEntryCard from "./LeagueEntries/LeagueEntryCard";
 import ChampionStatsRow from "./ChampionStats/ChampionStatsRow";
-import ChallengerEmblem from "../assets/Rank=Challenger.png";
+import PlatinumEmblem from "../assets/emblems/Rank=Platinum.png";
+import EmeraldEmblem from "../assets/emblems/Rank=Emerald.png";
+import DiamondEmblem from "../assets/emblems/Rank=Diamond.png";
 import { MatchCard } from "./Matches/MatchCard";
 import fiddleTile from "../assets/tiles/Fiddlesticks.png";
 import { CardTitle } from "./ui/CardTitle";
@@ -24,7 +26,7 @@ function DashboardContent() {
       >
         <LeagueEntryCard
           title="Ranked Solo"
-          emblemUrl={ChallengerEmblem}
+          emblemUrl={EmeraldEmblem}
           rank="Bronze 4"
           leaguePoints={0}
           wins={32}
@@ -34,7 +36,7 @@ function DashboardContent() {
 
         <LeagueEntryCard
           title="Ranked Flex"
-          emblemUrl={ChallengerEmblem}
+          emblemUrl={PlatinumEmblem}
           rank="Iron 3"
           leaguePoints={99}
           wins={52}
