@@ -7,6 +7,8 @@ const theme = extendTheme({
     border: "#149C3A",
     secondary: "#191937",
     terciary: "#3273FA",
+    win: "#1E2B5E",
+    lose: "#3E223B",
   },
 
   fonts: {
