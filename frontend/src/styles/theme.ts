@@ -9,6 +9,9 @@ const theme = extendTheme({
     terciary: "#3273FA",
     win: "#1E2B5E",
     lose: "#3E223B",
+    ligthBlueText: "#C1D0F2",
+    orangeText: "#FF9B00",
+    redText: "#AD3842",
   },
 
   fonts: {
