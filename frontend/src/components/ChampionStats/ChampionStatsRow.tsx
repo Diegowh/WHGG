@@ -1,4 +1,5 @@
-import { Flex, Image, Box, Text, Spacer } from "@chakra-ui/react";
+import { Flex, Text, Spacer } from "@chakra-ui/react";
+import { ImageTile } from "../ui/ImageTile";
 
 interface ChampionStatsRowProps {
   img: string;
@@ -14,14 +15,7 @@ function ChampionStatsRow({ img, kda, winrate }: ChampionStatsRowProps) {
       padding={3}
       marginBottom={"1px"}
     >
-      <Box overflow="hidden" width="fit-content">
-        <Image
-          src={img}
-          boxSize="35px"
-          objectFit="cover"
-          transform="scale(1.2)"
-        />
-      </Box>
+      <ImageTile img={img} />
 
       <Text
         fontSize="12px"
@@ -41,7 +35,15 @@ function ChampionStatsRow({ img, kda, winrate }: ChampionStatsRowProps) {
           fontSize="14px"
           alignSelf={"center"}
           fontWeight={600}
-          color={kda < 1 ? "redText" : kda < 3 ? "lightBlueText" : "terciary"}
+          color={
+            kda < 1
+              ? "redText"
+              : kda < 3
+              ? "lightBlueText"
+              : kda < 5
+              ? "terciary"
+              : "#FF9B00"
+          }
         >
           {kda} KDA
         </Text>
