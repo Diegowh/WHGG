@@ -1,9 +1,8 @@
-import { Box, Center, Flex, Text, Square } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import LeagueEntryCard from "./LeagueEntries/LeagueEntryCard";
 import ChampionStatsRow from "./ChampionStats/ChampionStatsRow";
 import PlatinumEmblem from "../assets/emblems/Rank=Platinum.png";
 import EmeraldEmblem from "../assets/emblems/Rank=Emerald.png";
-import DiamondEmblem from "../assets/emblems/Rank=Diamond.png";
 import { MatchCard } from "./Matches/MatchCard";
 import fiddleTile from "../assets/tiles/Fiddlesticks.png";
 import { CardTitle } from "./ui/CardTitle";

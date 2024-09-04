@@ -1,4 +1,4 @@
-import { Flex, Text, Image, Box } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import { ImageTile } from "../ui/ImageTile";
 
 interface ParticipantRowProps {

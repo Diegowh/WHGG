@@ -1,4 +1,4 @@
-import { Flex, Image, Text, Spacer, Box } from "@chakra-ui/react";
+import { Flex, Image, Text, Spacer } from "@chakra-ui/react";
 import { CardTitle } from "../ui/CardTitle";
 
 interface LeagueEntryCardProps {
