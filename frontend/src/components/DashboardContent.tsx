@@ -27,7 +27,7 @@ function DashboardContent() {
         <LeagueEntryCard
           title="Ranked Solo"
           emblemUrl={EmeraldEmblem}
-          rank="Bronze 4"
+          rank="Emerald 2"
           leaguePoints={0}
           wins={32}
           losses={12}
@@ -37,7 +37,7 @@ function DashboardContent() {
         <LeagueEntryCard
           title="Ranked Flex"
           emblemUrl={PlatinumEmblem}
-          rank="Iron 3"
+          rank="Platinum 1"
           leaguePoints={99}
           wins={52}
           losses={22}
@@ -54,13 +54,13 @@ function DashboardContent() {
         >
           <CardTitle text="Champion Stats" mt={1} ml={3} />
         </Flex>
-        <ChampionStatsRow img={fiddleTile} />
-        <ChampionStatsRow img={fiddleTile} />
-        <ChampionStatsRow img={fiddleTile} />
-        <ChampionStatsRow img={fiddleTile} />
-        <ChampionStatsRow img={fiddleTile} />
-        <ChampionStatsRow img={fiddleTile} />
-        <ChampionStatsRow img={fiddleTile} />
+        <ChampionStatsRow img={fiddleTile} kda={3.47} winrate={75} />
+        <ChampionStatsRow img={fiddleTile} kda={0.33} winrate={12} />
+        <ChampionStatsRow img={fiddleTile} kda={1.65} winrate={12} />
+        <ChampionStatsRow img={fiddleTile} kda={3.11} winrate={12} />
+        <ChampionStatsRow img={fiddleTile} kda={6.27} winrate={12} />
+        <ChampionStatsRow img={fiddleTile} kda={2.77} winrate={12} />
+        <ChampionStatsRow img={fiddleTile} kda={1.39} winrate={12} />
       </Flex>
       {/* Right Column */}
       <Flex
