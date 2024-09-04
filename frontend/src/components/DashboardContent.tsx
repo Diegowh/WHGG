@@ -72,13 +72,7 @@ function DashboardContent() {
       >
         {/* Header */}
         <CardTitle text="Match History" mb={4} />
-        <MatchCard bgColor="win" />
-        <MatchCard bgColor="lose" />
-        <MatchCard bgColor="win" />
-        <MatchCard bgColor="lose" />
-        <MatchCard bgColor="win" />
-        <MatchCard bgColor="lose" />
-        <MatchCard bgColor="win" />
+        <MatchCard win="win" kda={9.75} />
       </Flex>
     </Flex>
   );
