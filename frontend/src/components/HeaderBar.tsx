@@ -5,7 +5,7 @@ import logo from "../assets/whgg-logo.png";
 function HeaderBar() {
   return (
     <Box
-      height="8vh"
+      height="75px"
       display="flex"
       flexDirection="row"
       top="0"
