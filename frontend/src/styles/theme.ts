@@ -11,7 +11,7 @@ const theme = extendTheme({
     lose: "#3E223B",
     ligthBlueText: "#C1D0F2",
     orangeText: "#FF9B00",
-    redText: "#AD3842",
+    redText: "#FF4E50",
   },
 
   fonts: {
