@@ -46,17 +46,17 @@ function LeagueEntryCard({
           <Text fontSize="18px" fontWeight={600}>
             {rank}
           </Text>
-          <Text fontSize="14px" color={"#C1D0F2"}>
+          <Text fontSize="14px" color={"ligthBlueText"}>
             {leaguePoints} lp
           </Text>
         </Flex>
         <Spacer />
         {/* Winrate container */}
         <Flex mr={3} pt={3} direction={"column"} textAlign={"right"}>
-          <Text fontSize="12px" fontWeight={600} color={"#C1D0F2"}>
+          <Text fontSize="12px" fontWeight={600} color={"ligthBlueText"}>
             {wins}W {losses}L
           </Text>
-          <Text fontSize="12px" fontWeight={600} color={"#C1D0F2"}>
+          <Text fontSize="12px" fontWeight={600} color={"ligthBlueText"}>
             {wr}% Win Rate
           </Text>
         </Flex>
