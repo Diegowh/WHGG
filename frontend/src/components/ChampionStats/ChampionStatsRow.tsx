@@ -1,9 +1,11 @@
-import { Flex, Image, Box } from "@chakra-ui/react";
+import { Flex, Image, Box, Text, Spacer } from "@chakra-ui/react";
 
 interface ChampionStatsRowProps {
   img: string;
+  kda: number;
+  winrate: number;
 }
-function ChampionStatsRow({ img }: ChampionStatsRowProps) {
+function ChampionStatsRow({ img, kda, winrate }: ChampionStatsRowProps) {
   return (
     <Flex
       bgColor={"secondary"}
@@ -20,6 +22,64 @@ function ChampionStatsRow({ img }: ChampionStatsRowProps) {
           transform="scale(1.2)"
         />
       </Box>
+
+      <Text
+        fontSize="12px"
+        fontWeight={600}
+        alignSelf={"center"}
+        marginLeft={"10px"}
+        isTruncated
+        maxWidth="70px"
+      >
+        {"Fiddlesticks"}
+      </Text>
+      <Spacer />
+
+      {/* KDA */}
+      <Flex direction={"column"}>
+        <Text
+          fontSize="14px"
+          alignSelf={"center"}
+          fontWeight={600}
+          color={kda < 1 ? "redText" : kda < 3 ? "lightBlueText" : "terciary"}
+        >
+          {kda} KDA
+        </Text>
+        <Text
+          fontSize="12px"
+          fontWeight={600}
+          alignSelf={"center"}
+          color={"ligthBlueText"}
+        >
+          {"6.4"} / {"3.3"} / {"9.9"}
+        </Text>
+      </Flex>
+      {/* WinRate */}
+      <Spacer />
+      <Flex direction={"column"}>
+        <Text
+          fontSize="12px"
+          fontWeight={600}
+          alignSelf={"end"}
+          color={
+            winrate < 60
+              ? "lightBlueText"
+              : winrate < 75
+              ? "terciary"
+              : "orangeText"
+          }
+        >
+          {winrate}%
+        </Text>
+        <Text
+          fontSize="12px"
+          fontWeight={600}
+          alignSelf={"end"}
+          color={"ligthBlueText"}
+        >
+          {"23"} games
+        </Text>
+      </Flex>
     </Flex>
   );
 }
