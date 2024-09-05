@@ -1,0 +1,74 @@
+[
+  {
+    "id": 21,
+    "image": "SummonerBarrier.png"
+  },
+  {
+    "id": 1,
+    "image": "SummonerBoost.png"
+  },
+  {
+    "id": 2202,
+    "image": "SummonerCherryFlash.png"
+  },
+  {
+    "id": 2201,
+    "image": "SummonerCherryHold.png"
+  },
+  {
+    "id": 14,
+    "image": "SummonerDot.png"
+  },
+  {
+    "id": 3,
+    "image": "SummonerExhaust.png"
+  },
+  {
+    "id": 4,
+    "image": "SummonerFlash.png"
+  },
+  {
+    "id": 6,
+    "image": "SummonerHaste.png"
+  },
+  {
+    "id": 7,
+    "image": "SummonerHeal.png"
+  },
+  {
+    "id": 13,
+    "image": "SummonerMana.png"
+  },
+  {
+    "id": 30,
+    "image": "SummonerPoroRecall.png"
+  },
+  {
+    "id": 31,
+    "image": "SummonerPoroThrow.png"
+  },
+  {
+    "id": 11,
+    "image": "SummonerSmite.png"
+  },
+  {
+    "id": 39,
+    "image": "SummonerSnowURFSnowball_Mark.png"
+  },
+  {
+    "id": 32,
+    "image": "SummonerSnowball.png"
+  },
+  {
+    "id": 12,
+    "image": "SummonerTeleport.png"
+  },
+  {
+    "id": 54,
+    "image": "Summoner_UltBookPlaceholder.png"
+  },
+  {
+    "id": 55,
+    "image": "Summoner_UltBookSmitePlaceholder.png"
+  }
+]
