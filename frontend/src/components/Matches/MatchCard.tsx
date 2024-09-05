@@ -59,7 +59,7 @@ export function MatchCard({ match }: MatchCardProps) {
 
   const getQueueName = (queueId: number) => {
     const queue = queues.find((q) => q.queueId === queueId);
-    return queue ? queue.name : "Unknown Mode";
+    return queue ? queue.name : "Unknown";
   };
 
   const getKda = (k: number, d: number, a: number) => {
@@ -83,6 +83,9 @@ export function MatchCard({ match }: MatchCardProps) {
   const summonerSpell2 = getSpellImageUrl(4);
 
   const getPerkUrl = (perkId: number) => {
+    if (perkId === 0) {
+      return undefined;
+    }
     try {
       return new URL(`../../assets/img/runes/${perkId}.png`, import.meta.url)
         .href;
@@ -90,6 +93,21 @@ export function MatchCard({ match }: MatchCardProps) {
       return undefined;
     }
   };
+  const getItemImageUrl = (itemId: number): string | undefined => {
+    if (itemId === 0) {
+      return undefined;
+    }
+    try {
+      return new URL(`../../assets/img/item/${itemId}.png`, import.meta.url)
+        .href;
+    } catch (error) {
+      return undefined;
+    }
+  };
+
+  const championName = match.championName.startsWith("Strawberry_")
+    ? match.championName.replace("Strawberry_", "")
+    : match.championName;
   return (
     <Flex
       bgColor={cardBgColor}
@@ -106,6 +124,7 @@ export function MatchCard({ match }: MatchCardProps) {
         alignItems={"center"}
         // justifyContent={"center"}
         margin={4}
+        width={"66px"}
       >
         <Text fontSize="11px" fontWeight={600}>
           {getQueueName(match.queueId)}
@@ -120,7 +139,7 @@ export function MatchCard({ match }: MatchCardProps) {
             pr={1}
             color={match.win ? "terciary" : "redText"}
           >
-            WIN
+            {match.win ? "WIN" : "LOSS"}
           </Text>
           <Text fontSize="11px" fontWeight={600} color="lightblueText">
             {formatTime(match.gameDuration)}
@@ -128,8 +147,8 @@ export function MatchCard({ match }: MatchCardProps) {
         </Flex>
       </Flex>
       {/* Columna 1 / Imagen */}
+      <ImageTile img={getChampionTileUrl(championName)} boxSize="50px" />
 
-      <ImageTile img={getChampionTileUrl(match.championName)} boxSize="50px" />
       {/* Columna 2 y 3 / SummSpells y Runas */}
       <Flex direction={"column"}>
         {renderItem(summonerSpell1)}
@@ -167,9 +186,9 @@ export function MatchCard({ match }: MatchCardProps) {
         </Box>
       </Flex>
       {/* Columna 4 / Score y KDA */}
-      <Flex direction={"column"} alignItems={"center"} mr={4}>
+      <Flex direction={"column"} alignItems={"center"} mr={4} width={"70px"}>
         {/* Línea de Kills / Deaths / Assists */}
-        <Text fontSize="15px" fontWeight={600}>
+        <Text fontSize="13px" fontWeight={600}>
           <Text as="span" color="white">
             {match.kills}
           </Text>{" "}
@@ -210,19 +229,19 @@ export function MatchCard({ match }: MatchCardProps) {
       </Flex>
       {/* Columnas de Items */}
       <Flex direction={"column"}>
-        {renderItem(item0)}
-        {renderItem(item3)}
+        {renderItem(getItemImageUrl(match.item0))}
+        {renderItem(getItemImageUrl(match.item3))}
       </Flex>
       <Flex direction={"column"}>
-        {renderItem(item1)}
-        {renderItem(undefined)}
+        {renderItem(getItemImageUrl(match.item1))}
+        {renderItem(getItemImageUrl(match.item4))}
       </Flex>
       <Flex direction={"column"}>
-        {renderItem(item2)}
-        {renderItem(undefined)}
+        {renderItem(getItemImageUrl(match.item2))}
+        {renderItem(getItemImageUrl(match.item5))}
       </Flex>
       <Flex direction={"column"} mr={4}>
-        {renderItem(item6)}
+        {renderItem(getItemImageUrl(match.item6))}
         <Box
           boxSize={"25px"}
           borderRadius={4}
@@ -233,19 +252,15 @@ export function MatchCard({ match }: MatchCardProps) {
       </Flex>
       {/* Columna Equipo 1 */}
       <Flex direction={"column"} mr={4}>
-        <ParticipantRow img={testTile} riotId="Flatulent paco" />
-        <ParticipantRow img={testTile} riotId="w00tfighter" />
-        <ParticipantRow img={testTile} riotId="oaisjdoadjkals" />
-        <ParticipantRow img={testTile} riotId="oaisjdoadjkals" />
-        <ParticipantRow img={testTile} riotId="oaisjdoadjkals" />
+        {match.participants.slice(0, 5).map((participant) => (
+          <ParticipantRow participant={participant} />
+        ))}
       </Flex>
       {/* Columna Equipo 2 */}
       <Flex direction={"column"}>
-        <ParticipantRow img={testTile} riotId="oaisjdoadjkals" />
-        <ParticipantRow img={testTile} riotId="oaisjdoadjkals" />
-        <ParticipantRow img={testTile} riotId="oaisjdoadjkals" />
-        <ParticipantRow img={testTile} riotId="oaisjdoadjkals" />
-        <ParticipantRow img={testTile} riotId="oaisjdoadjkals" />
+        {match.participants.slice(5, 10).map((participant) => (
+          <ParticipantRow participant={participant} />
+        ))}
       </Flex>
     </Flex>
   );
