@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { SearchResponse } from "../interfaces";
+import { transformObjectKeys } from "../utils/utils";
 
 const BASE_URL = "https://whgg.onrender.com/lol/profile/";
 
@@ -32,8 +33,9 @@ export function useSearch() {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      const data: SearchResponse = await response.json();
-      setResult(data);
+      const data = await response.json();
+      const transformedData: SearchResponse = transformObjectKeys(data);
+      setResult(transformedData);
     } catch (e: any) {
       if (e.name === "AbortError") {
         console.log("Request aborted");
