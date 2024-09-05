@@ -1,13 +1,6 @@
 import { Flex, Text, Image, Box } from "@chakra-ui/react";
 import { ImageTile } from "../ui/ImageTile";
 import { ParticipantRow } from "./ParticipantRow";
-import testTile from "../../assets/tiles/Jhin.png";
-import item0 from "../../assets/img/item/6657.png";
-import item1 from "../../assets/img/item/3020.png";
-import item2 from "../../assets/img/item/3137.png";
-import item3 from "../../assets/img/item/3089.png";
-
-import item6 from "../../assets/img/item/2052.png";
 import { Match } from "../../interfaces";
 import queues from "../../utils/queues.json";
 import summonerSpells from "../../utils/summonerSpells.json";
