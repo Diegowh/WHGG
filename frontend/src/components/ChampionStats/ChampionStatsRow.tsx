@@ -5,8 +5,22 @@ interface ChampionStatsRowProps {
   img: string;
   kda: number;
   winrate: number;
+  name: string;
+  gamesPlayed: number;
+  kills: number;
+  deaths: number;
+  assists: number;
 }
-function ChampionStatsRow({ img, kda, winrate }: ChampionStatsRowProps) {
+function ChampionStatsRow({
+  img,
+  kda,
+  winrate,
+  name,
+  gamesPlayed,
+  kills,
+  deaths,
+  assists,
+}: ChampionStatsRowProps) {
   return (
     <Flex
       bgColor={"secondary"}
@@ -23,9 +37,9 @@ function ChampionStatsRow({ img, kda, winrate }: ChampionStatsRowProps) {
         alignSelf={"center"}
         marginLeft={"10px"}
         isTruncated
-        maxWidth="70px"
+        maxWidth="55px"
       >
-        {"Fiddlesticks"}
+        {name}
       </Text>
       <Spacer />
 
@@ -39,7 +53,7 @@ function ChampionStatsRow({ img, kda, winrate }: ChampionStatsRowProps) {
             kda < 1
               ? "redText"
               : kda < 3
-              ? "lightBlueText"
+              ? "lightblueText"
               : kda < 5
               ? "terciary"
               : "#FF9B00"
@@ -51,9 +65,9 @@ function ChampionStatsRow({ img, kda, winrate }: ChampionStatsRowProps) {
           fontSize="12px"
           fontWeight={600}
           alignSelf={"center"}
-          color={"ligthBlueText"}
+          color={"lightblueText"}
         >
-          {"6.4"} / {"3.3"} / {"9.9"}
+          {kills} / {deaths} / {assists}
         </Text>
       </Flex>
       {/* WinRate */}
@@ -65,7 +79,7 @@ function ChampionStatsRow({ img, kda, winrate }: ChampionStatsRowProps) {
           alignSelf={"end"}
           color={
             winrate < 60
-              ? "lightBlueText"
+              ? "lightblueText"
               : winrate < 75
               ? "terciary"
               : "orangeText"
@@ -77,9 +91,9 @@ function ChampionStatsRow({ img, kda, winrate }: ChampionStatsRowProps) {
           fontSize="12px"
           fontWeight={600}
           alignSelf={"end"}
-          color={"ligthBlueText"}
+          color={"lightblueText"}
         >
-          {"23"} games
+          {gamesPlayed} games
         </Text>
       </Flex>
     </Flex>
