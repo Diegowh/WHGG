@@ -1,0 +1,94 @@
+[
+  {
+    "queueId": 0,
+    "name": "Custom"
+  },
+  {
+    "queueId": 420,
+    "name": "Ranked Solo"
+  },
+  {
+    "queueId": 430,
+    "name": "Blind Pick"
+  },
+  {
+    "queueId": 440,
+    "name": "Ranked Flex"
+  },
+  {
+    "queueId": 450,
+    "name": "ARAM"
+  },
+  {
+    "queueId": 490,
+    "name": "Quickplay"
+  },
+  {
+    "queueId": 700,
+    "name": "Clash"
+  },
+  {
+    "queueId": 720,
+    "name": "ARAM Clash"
+  },
+  {
+    "queueId": 830,
+    "name": "Intro Bots"
+  },
+  {
+    "queueId": 840,
+    "name": "Beginner Bots"
+  },
+  {
+    "queueId": 850,
+    "name": "Intermediate Bots"
+  },
+  {
+    "queueId": 900,
+    "name": "ARURF"
+  },
+  {
+    "queueId": 1020,
+    "name": "One for All"
+  },
+  {
+    "queueId": 1090,
+    "name": "Teamfight Tactics"
+  },
+  {
+    "queueId": 1100,
+    "name": "Ranked TFT"
+  },
+  {
+    "queueId": 1110,
+    "name": "TFT Tutorial"
+  },
+  {
+    "queueId": 1400,
+    "name": "Ultimate Spellbook"
+  },
+  {
+    "queueId": 1700,
+    "name": "Arena"
+  },
+  {
+    "queueId": 1710,
+    "name": "Arena"
+  },
+  {
+    "queueId": 1900,
+    "name": "Pick URF"
+  },
+  {
+    "queueId": 2000,
+    "name": "Tutorial 1"
+  },
+  {
+    "queueId": 2010,
+    "name": "Tutorial 2"
+  },
+  {
+    "queueId": 2020,
+    "name": "Tutorial 3"
+  }
+]
