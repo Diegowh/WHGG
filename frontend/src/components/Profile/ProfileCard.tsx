@@ -1,28 +1,31 @@
 import { Box, Button, Text, useTheme } from "@chakra-ui/react";
 import ProfileImage from "./ProfileImage";
-import FiddlesticksIcon from "../../assets/6022.png";
-import FiddlesticksBackground from "../../assets/fiddlesticks_bg.jpg";
+import { SearchResponse } from "../../interfaces";
+import {
+  getHeaderChampion,
+  getChampionImageUrl,
+  getProfileImgUrl,
+  getProfileIconId,
+} from "./utils";
 
-type ProfileCardProps = {
-  level?: number;
-  imageSrc?: string;
+interface ProfileCardProps {
+  data: SearchResponse | null;
   imageAlt?: string;
   bgImage?: string;
-};
+}
 
-export function ProfileCard({
-  level = 534,
-  imageSrc = FiddlesticksIcon,
-  imageAlt = "Fiddlesticks",
-  bgImage = FiddlesticksBackground,
-}: ProfileCardProps) {
-  //   const level: number = 534;
-  //   const imageSrc: string = FiddlesticksIcon;
-  //   const imageAlt: string = "Fiddlesticks";
-  //   const bgImage: string = FiddlesticksBackground;
-
+export function ProfileCard({ data }: ProfileCardProps) {
   const theme = useTheme();
   const terciaryColor = theme.colors.terciary;
+
+  const profileIconId = getProfileIconId(data);
+  const imageSrc = getProfileImgUrl(profileIconId);
+  const level = data?.summonerLevel ?? 0;
+  const gameName = data?.gameName ?? "null";
+  const tagLine = data?.tagLine ?? "null";
+  const headerChampionName = getHeaderChampion(data);
+  const headerChampionUrl = getChampionImageUrl(headerChampionName);
+
   return (
     <Box
       bgColor={"background"}
@@ -41,7 +44,7 @@ export function ProfileCard({
         right: "0%",
         bottom: "0%",
         left: "0%",
-        backgroundImage: `linear-gradient(to left, rgba(0, 0, 0, 0), rgba(7, 7, 32, 1)80%), url(${bgImage})`,
+        backgroundImage: `linear-gradient(to left, rgba(0, 0, 0, 0), rgba(7, 7, 32, 1)80%), url(${headerChampionUrl})`,
 
         backgroundPosition: "100% 25%",
         backgroundRepeat: "no-repeat",
@@ -49,7 +52,7 @@ export function ProfileCard({
         opacity: 0.6,
       }}
     >
-      <ProfileImage src={imageSrc} alt={imageAlt} level={level} />
+      <ProfileImage src={imageSrc} level={level} />
       <Box display="flex" flexDirection="column" alignItems="start">
         <Text
           // as="b"
@@ -57,9 +60,13 @@ export function ProfileCard({
           fontSize="3xl"
           position="relative"
           pt={6}
-          fontFamily={"Barlow, sans-serif"}
         >
-          wallhack #1312
+          <Text as="span" color="white" fontWeight={600}>
+            {gameName}
+          </Text>{" "}
+          <Text as="span" color="lightblueText">
+            #{tagLine}
+          </Text>
         </Text>
         <Button
           mt={1}
