@@ -326,9 +326,9 @@ class DataManager:
 
                 champion_stats=schemas.ChampionStatsCreate(
                     name=match.champion_name,
-                    kill_avg=match.kills,
-                    death_avg=match.deaths,
-                    assist_avg=match.kills,
+                    kill_avg=round(match.kills, 1),
+                    death_avg=round(match.deaths, 1),
+                    assist_avg=round(match.assists, 1),
                     kda=self._calculate_kda(match.kills, match.deaths, match.assists),
                     winrate=self._calculate_winrate(wins, 1),
                     games_played=1,
