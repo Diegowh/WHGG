@@ -2,10 +2,9 @@ import { Box, Image, useTheme } from "@chakra-ui/react";
 
 type ProfileImageProps = {
   src: string;
-  alt: string;
   level: number;
 };
-function ProfileImage({ src, alt, level }: ProfileImageProps) {
+function ProfileImage({ src, level }: ProfileImageProps) {
   const theme = useTheme();
   const borderColor = theme.colors.border;
 
@@ -13,7 +12,6 @@ function ProfileImage({ src, alt, level }: ProfileImageProps) {
     <Box position="relative" display="inline-block" mr={"20px"}>
       <Image
         src={src}
-        alt={alt}
         width="100px"
         height="100px"
         border={`2px solid ${borderColor}`}
