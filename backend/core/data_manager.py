@@ -430,8 +430,10 @@ class DataManager:
                 match=match,
                 account=db_obj
             )
-
-            self._create_or_update_champion_stats(match)
+            
+            if match.queue_id == 420 or match.queue_id == 440:
+                # Si es una partida de SoloQ o FlexQ
+                self._create_or_update_champion_stats(match)
 
             for participant in participants:
                 crud.create_participant(
