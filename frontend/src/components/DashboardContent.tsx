@@ -38,7 +38,12 @@ function DashboardContent({ data }: DashboardContentProps) {
       .sort((a, b) => b.gamesPlayed - a.gamesPlayed)
       .slice(0, 7) || [];
 
-  const matches = data?.matches.slice(0, 20) || [];
+  const matches =
+    data?.matches
+      .filter(
+        (match) => ![1700, 1810, 1820, 1830, 1840].includes(match.queueId)
+      )
+      .slice(0, 20) || [];
 
   const getEmblemUrl = (rank: string) =>
     rankEmblems[rank as keyof typeof rankEmblems] || rankEmblems["IRON"];
@@ -112,7 +117,7 @@ function DashboardContent({ data }: DashboardContentProps) {
         {/* Header */}
         <CardTitle text="Match History" mb={4} />
         {matches.length > 0 ? (
-          matches.map((match) => <MatchCard match={match} />)
+          matches.map((filteredMatch) => <MatchCard match={filteredMatch} />) // Mapear los matches ya filtrados y limitados
         ) : (
           <Text>No matches available</Text>
         )}
