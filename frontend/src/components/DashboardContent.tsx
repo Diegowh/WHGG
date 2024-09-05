@@ -1,20 +1,49 @@
-import { Flex } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import LeagueEntryCard from "./LeagueEntries/LeagueEntryCard";
 import ChampionStatsRow from "./ChampionStats/ChampionStatsRow";
-import PlatinumEmblem from "../assets/emblems/Rank=Platinum.png";
-import EmeraldEmblem from "../assets/emblems/Rank=Emerald.png";
 import { MatchCard } from "./Matches/MatchCard";
-import fiddleTile from "../assets/tiles/Fiddlesticks.png";
 import { CardTitle } from "./ui/CardTitle";
+import { SearchResponse } from "../interfaces";
+import { getChampionTileUrl, getWinrate } from "../utils/utils";
+import rankEmblems from "../utils/emblems";
+import { capitalize } from "../utils/utils";
 
-function DashboardContent() {
+interface DashboardContentProps {
+  data: SearchResponse | null;
+}
+
+function DashboardContent({ data }: DashboardContentProps) {
+  // Default values
+  const defaultEntry = {
+    queueType: "Unranked",
+    tier: "",
+    rank: "Unranked",
+    leaguePoints: 0,
+    wins: 0,
+    losses: 0,
+    wr: 0,
+  };
+
+  // Get league entries
+  const soloEntry =
+    data?.leagueEntries.find(
+      (entry) => entry.queueType === "RANKED_SOLO_5x5"
+    ) || defaultEntry;
+  const flexEntry =
+    data?.leagueEntries.find((entry) => entry.queueType === "RANKED_FLEX_SR") ||
+    defaultEntry;
+
+  const championStats =
+    data?.championStats
+      .sort((a, b) => b.gamesPlayed - a.gamesPlayed)
+      .slice(0, 7) || [];
+
+  const matches = data?.matches.slice(0, 20) || [];
+
+  const getEmblemUrl = (rank: string) =>
+    rankEmblems[rank as keyof typeof rankEmblems] || rankEmblems["IRON"];
   return (
-    <Flex
-      direction={"row"}
-      position={"relative"}
-      height={"auto"}
-      _before={"absolute "}
-    >
+    <Flex direction={"row"} position={"relative"} height={"auto"}>
       {/* Left column */}
       <Flex
         pr={3}
@@ -25,23 +54,24 @@ function DashboardContent() {
       >
         <LeagueEntryCard
           title="Ranked Solo"
-          emblemUrl={EmeraldEmblem}
-          rank="Emerald 2"
-          leaguePoints={0}
-          wins={32}
-          losses={12}
-          wr={60}
+          emblemUrl={getEmblemUrl(soloEntry.tier)}
+          rank={capitalize(soloEntry.tier) + " " + soloEntry.rank}
+          leaguePoints={soloEntry.leaguePoints}
+          wins={soloEntry.wins}
+          losses={soloEntry.losses}
+          wr={getWinrate(soloEntry.wins, soloEntry.losses)}
         />
 
         <LeagueEntryCard
           title="Ranked Flex"
-          emblemUrl={PlatinumEmblem}
-          rank="Platinum 1"
-          leaguePoints={99}
-          wins={52}
-          losses={22}
-          wr={40}
+          emblemUrl={getEmblemUrl(flexEntry.tier)}
+          rank={capitalize(flexEntry.tier) + " " + flexEntry.rank}
+          leaguePoints={flexEntry.leaguePoints}
+          wins={flexEntry.wins}
+          losses={flexEntry.losses}
+          wr={getWinrate(flexEntry.wins, flexEntry.losses)}
         />
+
         <Flex
           height={"59px"}
           bgColor={"secondary"}
@@ -53,13 +83,23 @@ function DashboardContent() {
         >
           <CardTitle text="Champion Stats" mt={1} ml={3} />
         </Flex>
-        <ChampionStatsRow img={fiddleTile} kda={3.47} winrate={75} />
-        <ChampionStatsRow img={fiddleTile} kda={0.33} winrate={12} />
-        <ChampionStatsRow img={fiddleTile} kda={1.65} winrate={12} />
-        <ChampionStatsRow img={fiddleTile} kda={3.11} winrate={12} />
-        <ChampionStatsRow img={fiddleTile} kda={6.27} winrate={12} />
-        <ChampionStatsRow img={fiddleTile} kda={2.77} winrate={12} />
-        <ChampionStatsRow img={fiddleTile} kda={1.39} winrate={12} />
+        {championStats.length > 0 ? (
+          championStats.map((champion) => (
+            <ChampionStatsRow
+              key={champion.id}
+              img={getChampionTileUrl(champion.name)}
+              kda={champion.kda}
+              winrate={champion.winrate}
+              name={champion.name}
+              gamesPlayed={champion.gamesPlayed}
+              kills={champion.killAvg}
+              deaths={champion.deathAvg}
+              assists={champion.assistAvg}
+            />
+          ))
+        ) : (
+          <Text> No champion stats available</Text>
+        )}
       </Flex>
       {/* Right Column */}
       <Flex
@@ -71,7 +111,11 @@ function DashboardContent() {
       >
         {/* Header */}
         <CardTitle text="Match History" mb={4} />
-        <MatchCard win="win" kda={9.75} />
+        {matches.length > 0 ? (
+          matches.map((match) => <MatchCard match={match} />)
+        ) : (
+          <Text>No matches available</Text>
+        )}
       </Flex>
     </Flex>
   );
