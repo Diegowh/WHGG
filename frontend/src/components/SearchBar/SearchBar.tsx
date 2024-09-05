@@ -12,7 +12,6 @@ import {
   SelectProps,
 } from "@chakra-ui/react";
 import { Search2Icon } from "@chakra-ui/icons";
-import { useSearch } from "../../hooks/useSearch";
 
 const servers = [
   "NA",
@@ -47,6 +46,12 @@ function Option({ value }: OptionProps) {
   );
 }
 interface SearchBarProps extends BoxProps {
+  handleSearch: (params: {
+    gameName: string;
+    tagLine: string;
+    server: string;
+  }) => void;
+  isLoading: boolean;
   inputProps?: InputProps;
   selectProps?: SelectProps;
   width?: string | number;
@@ -54,16 +59,14 @@ interface SearchBarProps extends BoxProps {
 }
 
 function SearchBar({
-  // width = "100%",
-  // height = "25%",
+  handleSearch,
+  isLoading,
   inputProps,
   selectProps,
   ...boxProps
 }: SearchBarProps) {
   const [query, setQuery] = useState("");
   const [server, setServer] = useState("EUW");
-
-  const { handleSearch, error, isLoading, result } = useSearch();
 
   const theme = useTheme();
   const secondaryColor = theme.colors.secondary;

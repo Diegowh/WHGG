@@ -17,7 +17,7 @@ export function ParticipantRow({ img, riotId }: ParticipantRowProps) {
         // marginLeft={"10px"}
         isTruncated
         maxWidth="60px"
-        color="ligthBlueText"
+        color="lightblueText"
       >
         {riotId}
       </Text>
