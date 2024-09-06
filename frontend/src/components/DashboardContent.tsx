@@ -1,4 +1,4 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { filter, Flex, Text } from "@chakra-ui/react";
 import LeagueEntryCard from "./LeagueEntries/LeagueEntryCard";
 import ChampionStatsRow from "./ChampionStats/ChampionStatsRow";
 import { MatchCard } from "./Matches/MatchCard";
@@ -12,41 +12,40 @@ interface DashboardContentProps {
   data: SearchResponse | null;
 }
 
-function DashboardContent({ data }: DashboardContentProps) {
-  // Default values
-  const defaultEntry = {
-    queueType: "Unranked",
-    tier: "",
-    rank: "Unranked",
-    leaguePoints: 0,
-    wins: 0,
-    losses: 0,
-    wr: 0,
-  };
+const defaultEntry = {
+  queueType: "Unranked",
+  tier: "",
+  rank: "Unranked",
+  leaguePoints: 0,
+  wins: 0,
+  losses: 0,
+  wr: 0,
+};
 
-  // Get league entries
+const getEmblemUrl = (rank: string) =>
+  rankEmblems[rank as keyof typeof rankEmblems] || rankEmblems["IRON"];
+
+function DashboardContent({ data }: DashboardContentProps) {
+  const {
+    leagueEntries = [],
+    championStats = [],
+    matches = [],
+  } = data || { leagueEntries: [], championStats: [], matches: [] };
+
   const soloEntry =
-    data?.leagueEntries.find(
-      (entry) => entry.queueType === "RANKED_SOLO_5x5"
-    ) || defaultEntry;
+    leagueEntries.find((entry) => entry.queueType === "RANKED_SOLO_5x5") ||
+    defaultEntry;
   const flexEntry =
-    data?.leagueEntries.find((entry) => entry.queueType === "RANKED_FLEX_SR") ||
+    leagueEntries.find((entry) => entry.queueType === "RANKED_FLEX_SR") ||
     defaultEntry;
 
-  const championStats =
-    data?.championStats
-      .sort((a, b) => b.gamesPlayed - a.gamesPlayed)
-      .slice(0, 7) || [];
+  const sortedChampionStats = championStats
+    .sort((a, b) => b.gamesPlayed - a.gamesPlayed)
+    .slice(0, 7);
+  const filteredMatches = matches
+    .filter((match) => ![1700, 1810, 1820, 1830, 1840].includes(match.queueId))
+    .slice(0, 20);
 
-  const matches =
-    data?.matches
-      .filter(
-        (match) => ![1700, 1810, 1820, 1830, 1840].includes(match.queueId)
-      )
-      .slice(0, 20) || [];
-
-  const getEmblemUrl = (rank: string) =>
-    rankEmblems[rank as keyof typeof rankEmblems] || rankEmblems["IRON"];
   return (
     <Flex direction={"row"} position={"relative"} height={"auto"}>
       {/* Left column */}
@@ -88,8 +87,8 @@ function DashboardContent({ data }: DashboardContentProps) {
         >
           <CardTitle text="Champion Stats" mt={1} ml={3} />
         </Flex>
-        {championStats.length > 0 ? (
-          championStats.map((champion) => (
+        {sortedChampionStats.length > 0 ? (
+          sortedChampionStats.map((champion) => (
             <ChampionStatsRow
               key={champion.id}
               img={getChampionTileUrl(champion.name)}
@@ -116,8 +115,10 @@ function DashboardContent({ data }: DashboardContentProps) {
       >
         {/* Header */}
         <CardTitle text="Match History" mb={4} />
-        {matches.length > 0 ? (
-          matches.map((filteredMatch) => <MatchCard match={filteredMatch} />) // Mapear los matches ya filtrados y limitados
+        {filteredMatches.length > 0 ? (
+          filteredMatches.map((filteredMatch) => (
+            <MatchCard match={filteredMatch} />
+          )) // Mapear los matches ya filtrados y limitados
         ) : (
           <Text>No matches available</Text>
         )}
