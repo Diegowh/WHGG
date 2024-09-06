@@ -4,7 +4,7 @@ import { transformObjectKeys } from "../utils/utils";
 
 const BASE_URL = "https://whgg.onrender.com/lol/profile/";
 
-interface SearchParams {
+export interface SearchParams {
   gameName: string;
   tagLine: string;
   server: string;
@@ -47,6 +47,12 @@ export function useSearch() {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (result) {
+      localStorage.setItem("searchResult", JSON.stringify(result));
+    }
+  }, [result]);
 
   useEffect(() => {
     if (result !== null) {
