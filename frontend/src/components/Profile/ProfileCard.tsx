@@ -7,17 +7,16 @@ import {
   getProfileImgUrl,
   getProfileIconId,
 } from "./utils";
-
+import UpdateButton from "./UpdateButton";
 interface ProfileCardProps {
   data: SearchResponse | null;
+  onUpdate: () => void;
+  isLoading: boolean;
   imageAlt?: string;
   bgImage?: string;
 }
 
-export function ProfileCard({ data }: ProfileCardProps) {
-  const theme = useTheme();
-  const terciaryColor = theme.colors.terciary;
-
+export function ProfileCard({ data, onUpdate, isLoading }: ProfileCardProps) {
   const profileIconId = getProfileIconId(data);
   const imageSrc = getProfileImgUrl(profileIconId);
   const level = data?.summonerLevel ?? 0;
@@ -68,17 +67,7 @@ export function ProfileCard({ data }: ProfileCardProps) {
             #{tagLine}
           </Text>
         </Text>
-        <Button
-          mt={1}
-          mb={4}
-          bgColor={terciaryColor}
-          borderRadius={3}
-          color={"white"}
-          width={"130px"}
-          _hover={{ bg: { terciaryColor } }}
-        >
-          Update
-        </Button>
+        <UpdateButton onUpdate={onUpdate} isLoading={isLoading} />
       </Box>
     </Box>
   );
