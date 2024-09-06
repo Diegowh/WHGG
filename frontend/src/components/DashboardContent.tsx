@@ -117,7 +117,7 @@ function DashboardContent({ data }: DashboardContentProps) {
         <CardTitle text="Match History" mb={4} />
         {filteredMatches.length > 0 ? (
           filteredMatches.map((filteredMatch) => (
-            <MatchCard match={filteredMatch} />
+            <MatchCard key={filteredMatch.id} match={filteredMatch} />
           )) // Mapear los matches ya filtrados y limitados
         ) : (
           <Text>No matches available</Text>
