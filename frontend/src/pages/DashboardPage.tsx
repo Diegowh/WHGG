@@ -10,24 +10,28 @@ import { useEffect } from "react";
 export function DashboardPage() {
   const { handleSearch, error, isLoading, result } = useSearch();
   const navigate = useNavigate();
-
-  const savedResult = localStorage.getItem("searchResult");
-  const finalResult = result || (savedResult ? JSON.parse(savedResult) : null);
-
+  // Guardar el resultado en localStorage cuando cambie
   useEffect(() => {
-    if (result !== null) {
+    if (result) {
       localStorage.setItem("searchResult", JSON.stringify(result));
     }
   }, [result]);
 
   useEffect(() => {
+    const savedResult = localStorage.getItem("searchResult");
+    const finalResult =
+      result || (savedResult ? JSON.parse(savedResult) : null);
+
     if (!finalResult) {
       navigate("/");
     }
   }, [result, navigate]);
 
+  const savedResult = localStorage.getItem("searchResult");
+  const finalResult = result || (savedResult ? JSON.parse(savedResult) : null);
+
   return (
-    <Flex direction="column" height="auto" bgColor={"backgound"}>
+    <Flex direction="column" height="auto" bgColor="backgound">
       <HeaderBar handleSearch={handleSearch} isLoading={isLoading} />
       {/* Dashboard Content */}
       <Flex overflow="auto" flex="1" justifyContent="center">
