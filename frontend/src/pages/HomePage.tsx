@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 export function HomePage() {
-  const { handleSearch, error, isLoading, result } = useSearch();
+  const { handleSearch, isLoading, result } = useSearch();
   const navigate = useNavigate();
 
   useEffect(() => {

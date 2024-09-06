@@ -1,4 +1,4 @@
-import { Box, Button, Text, useTheme } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import ProfileImage from "./ProfileImage";
 import { SearchResponse } from "../../interfaces";
 import {
